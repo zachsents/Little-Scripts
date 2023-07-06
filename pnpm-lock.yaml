@@ -37,6 +37,9 @@ importers:
     devDependencies:
       firebase-functions-test: 3.1.0_grgwnecou6w24yjkj3z4uh4yre
 
+  script-runner:
+    specifiers: {}
+
   web:
     specifiers:
       '@emotion/react': ^11.11.1

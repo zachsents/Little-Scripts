@@ -9,6 +9,13 @@
                 "^build"
             ]
         },
+        "deploy": {
+            "dependsOn": [
+                "^build",
+                "build",
+                "^deploy"
+            ]
+        },
         "lint": {},
         "dev": {
             "cache": false,
