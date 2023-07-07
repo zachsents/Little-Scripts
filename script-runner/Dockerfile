@@ -1,11 +1,7 @@
 FROM node:18
 
-WORKDIR /user-script
-COPY ./user-script .
-RUN npm install
-
-WORKDIR /server
-COPY ./server .
+WORKDIR /little-script
+COPY . .
 RUN npm install
 
 EXPOSE 5050

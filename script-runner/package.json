@@ -5,10 +5,18 @@
     "main": "index.js",
     "scripts": {
         "build": "docker build -t zachsents/little-scripts-script-runner:latest .",
-        "deploy": ""
+        "start": "docker run -it -p 5050:5050 --rm zachsents/little-scripts-script-runner:latest"
     },
     "keywords": [],
     "author": "",
     "license": "ISC",
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "firebase-admin": "^11.8.0",
+        "lodash": "^4.17.21",
+        "puppeteer": "^20.8.0",
+        "vm2": "^3.9.19"
+    },
     "type": "module"
 }

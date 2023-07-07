@@ -1,19 +1,18 @@
-import { exec as execCallback } from "child_process"
 import "dotenv/config"
 import express from "express"
 import { applicationDefault, initializeApp } from "firebase-admin/app"
 import { getStorage } from "firebase-admin/storage"
-import { getFirestore } from "firebase-admin/firestore"
+import { getFirestore, FieldValue } from "firebase-admin/firestore"
+import fs from "fs/promises"
 import path from "path"
 import { fileURLToPath } from "url"
-import { promisify } from "util"
+import { NodeVM } from "vm2"
 
 
 // Constants
 const PORT = 5050
-const SCRIPT_DESTINATION = path.join(fileURLToPath(import.meta.url), "../../user-script/index.js")
 const SCRIPT_SOURCE_PATH = scriptId => `script-source/${scriptId}.js`
-const exec = promisify(execCallback)
+const ALLOWED_MODULES = JSON.parse(await fs.readFile(path.join(fileURLToPath(import.meta.url), "../allowed-dependencies.json")))
 
 
 // Firebase setup
@@ -21,6 +20,7 @@ initializeApp({
     credential: applicationDefault(),
     storageBucket: "little-scripts-391918.appspot.com",
 })
+const db = getFirestore()
 
 
 // Express setup
@@ -57,27 +57,45 @@ app.post("/", async (req, res) => {
         file = getStorage().bucket().file(SCRIPT_SOURCE_PATH(messageContent.scriptId))
     }
 
-    await file.download({
-        destination: SCRIPT_DESTINATION,
+    const fileContents = await file.download()
+
+    const promises = []
+
+    const vm = new NodeVM({
+        console: "inherit",
+        sandbox: {
+            LittleScript: {
+                waitFor: promise => {
+                    promises.push(promise)
+                },
+                // TO DO: add functions to return values, store values, etc.
+            },
+        },
+        require: {
+            external: ALLOWED_MODULES,
+            builtin: [],
+        },
+        env: {},
     })
 
-    const { stdout, stderr } = await exec(`node ${SCRIPT_DESTINATION}`)
+    vm.run(`
+LittleScript.waitFor((async function() {
+    ${fileContents.toString()}
+})())
+    `, "user-script.js")
+
+    await Promise.all(promises)
 
     if (messageContent.scriptRunId) {
-        // WILO: fixing permissions for this
-        await getFirestore().collection("script-runs").doc(messageContent.scriptRunId).set({
-            stdout,
-            stderr,
+        await db.collection("script-runs").doc(messageContent.scriptRunId).set({
             status: "COMPLETED",
+            completedAt: FieldValue.serverTimestamp(),
         }, { merge: true })
 
         return res.status(204).send()
     }
 
-    res.send({
-        stdout,
-        stderr,
-    })
+    res.status(204).send()
 })
 
 app.listen(PORT, () => {
