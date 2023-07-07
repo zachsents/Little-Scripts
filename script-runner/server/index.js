@@ -12,12 +12,14 @@ import { promisify } from "util"
 // Constants
 const PORT = 5050
 const SCRIPT_DESTINATION = path.join(fileURLToPath(import.meta.url), "../../user-script/index.js")
+const SCRIPT_SOURCE_PATH = scriptId => `script-source/${scriptId}.js`
 const exec = promisify(execCallback)
 
 
 // Firebase setup
 initializeApp({
     credential: applicationDefault(),
+    storageBucket: "little-scripts-391918.appspot.com",
 })
 
 
@@ -29,7 +31,8 @@ app.use(express.json())
 /**
  * @typedef {object} ScriptRunRequestBody
  * 
- * @property {string} sourceUrl The URL of the script's source file. Must be a Google Storage URL.
+ * @property {string} [scriptId] The ID of the script. Also the name of the script's source file. Either use this or `sourceUrl`.
+ * @property {string} [sourceUrl] The URL of the script's source file. Must be a Google Storage URL. If included, `scriptId` is ignored.
  * @property {string} [scriptRunId] The ID of the script run. Used to store the script's output and the run's status.
  */
 
@@ -45,11 +48,16 @@ app.post("/", async (req, res) => {
         Buffer.from(encodedMessage, "base64").toString().trim()
     )
 
-    // TO DO: download script file from script document in Firestore -- make optional.
-    // not sure if I want to do this yet for the sake of decoupling
+    let file
+    if (messageContent.sourceUrl) {
+        const { host: bucketName, pathname: filePath } = new URL(messageContent.sourceUrl)
+        file = getStorage().bucket(bucketName).file(filePath.slice(1))
+    }
+    else {
+        file = getStorage().bucket().file(SCRIPT_SOURCE_PATH(messageContent.scriptId))
+    }
 
-    const { host: bucketName, pathname: filePath } = new URL(messageContent.sourceUrl)
-    await getStorage().bucket(bucketName).file(filePath.slice(1)).download({
+    await file.download({
         destination: SCRIPT_DESTINATION,
     })
 
