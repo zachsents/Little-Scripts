@@ -6,4 +6,10 @@ export const RUN_STATUS = {
     FAILED: "FAILED",
     CANCELLED: "CANCELLED",
     SCHEDULED: "SCHEDULED",
+    PENDING_SCHEDULING: "PENDING_SCHEDULING",
+}
+
+
+export const TRIGGER_TYPE = {
+    RECURRING_SCHEDULE: "trigger.recurring-schedule",
 }
