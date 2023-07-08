@@ -6,6 +6,7 @@ import { getFirestore, FieldValue } from "firebase-admin/firestore"
 import fs from "fs/promises"
 import path from "path"
 import { fileURLToPath } from "url"
+import util from "util"
 import { NodeVM } from "vm2"
 
 
@@ -13,6 +14,8 @@ import { NodeVM } from "vm2"
 const PORT = 5050
 const SCRIPT_SOURCE_PATH = scriptId => `script-source/${scriptId}.js`
 const ALLOWED_MODULES = JSON.parse(await fs.readFile(path.join(fileURLToPath(import.meta.url), "../allowed-dependencies.json")))
+const LOG_LEVELS = ["debug", "log", "info", "warn", "error"]
+const LOG_PREFIX_LENGTH = Math.max(...LOG_LEVELS.map(level => level.length))
 
 
 // Firebase setup
@@ -24,6 +27,7 @@ const db = getFirestore()
 db.settings({
     ignoreUndefinedProperties: true,
 })
+const storage = getStorage()
 
 
 // Express setup
@@ -36,7 +40,7 @@ app.use(express.json())
  * 
  * @property {string} [scriptId] The ID of the script. Also the name of the script's source file. Either use this or `sourceUrl`.
  * @property {string} [sourceUrl] The URL of the script's source file. Must be a Google Storage URL. If included, `scriptId` is ignored.
- * @property {string} [scriptRunId] The ID of the script run. Used to store the script's output and the run's status.
+ * @property {string} scriptRunId The ID of the script run. Used to store the script's output and the run's status.
  */
 
 app.post("/", async (req, res) => {
@@ -54,20 +58,21 @@ app.post("/", async (req, res) => {
     let file
     if (messageContent.sourceUrl) {
         const { host: bucketName, pathname: filePath } = new URL(messageContent.sourceUrl)
-        file = getStorage().bucket(bucketName).file(filePath.slice(1))
+        file = storage.bucket(bucketName).file(filePath.slice(1))
     }
     else {
-        file = getStorage().bucket().file(SCRIPT_SOURCE_PATH(messageContent.scriptId))
+        file = storage.bucket().file(SCRIPT_SOURCE_PATH(messageContent.scriptId))
     }
 
     const fileContents = await file.download()
 
-    const promises = []
+    let executionPromise
     let returnValue
     let runtimeError
+    const promises = []
 
     const vm = new NodeVM({
-        console: "inherit",
+        console: "redirect",
         sandbox: {
             LittleScript: {
                 waitFor: promise => {
@@ -76,13 +81,11 @@ app.post("/", async (req, res) => {
                 // TO DO: add functions to return values, store values, etc.
             },
             _wrapper: (promise) => {
-                promises.push(
-                    promise
-                        .then(result => (returnValue = result))
-                        .catch(err => {
-                            runtimeError = Object.fromEntries(Object.getOwnPropertyNames(err).map(key => [key, err[key]]))
-                        })
-                )
+                executionPromise = promise
+                    .then(result => (returnValue = result))
+                    .catch(err => {
+                        runtimeError = Object.fromEntries(Object.getOwnPropertyNames(err).map(key => [key, err[key]]))
+                    })
             }
         },
         require: {
@@ -92,28 +95,49 @@ app.post("/", async (req, res) => {
         env: {},
     })
 
+    const logStream = storage.bucket().file(`script-run-logs/${messageContent.scriptRunId}.log`).createWriteStream()
+    const logsFinishedUploading = new Promise(resolve => logStream.on("finish", resolve))
+    logStream.write(`Script running at ${new Date().toISOString()}\n\n`)
+
+    LOG_LEVELS.forEach(level => {
+        vm.on(`console.${level}`, (...args) => {
+
+            const prefix = `${" ".repeat(LOG_PREFIX_LENGTH - level.length)}[${level}]`
+
+            const formattedArgs = args.map(arg => {
+                if (typeof arg === "string")
+                    return arg
+
+                return util.inspect(arg)
+            })
+
+            logStream.write(`${prefix} ${formattedArgs.join(" ")}\n`)
+        })
+    })
+
     vm.run(`
 _wrapper((async function() {
     ${fileContents.toString()}
 })())
     `, "user-script.js")
 
-    await Promise.all(promises)
+    await Promise.all([executionPromise, ...promises])
 
-    if (messageContent.scriptRunId) {
-        const documentUpdate = runtimeError ? {
-            status: "FAILED",
-            failedAt: FieldValue.serverTimestamp(),
-            failureReason: "Runtime error",
-            runtimeError,
-        } : {
-            status: "COMPLETED",
-            completedAt: FieldValue.serverTimestamp(),
-            returnValue,
-        }
+    logStream.end()
+    await logsFinishedUploading
 
-        await db.collection("script-runs").doc(messageContent.scriptRunId).set(documentUpdate, { merge: true })
+    const documentUpdate = runtimeError ? {
+        status: "FAILED",
+        failedAt: FieldValue.serverTimestamp(),
+        failureReason: "Runtime error",
+        runtimeError,
+    } : {
+        status: "COMPLETED",
+        completedAt: FieldValue.serverTimestamp(),
+        returnValue,
     }
+
+    await db.collection("script-runs").doc(messageContent.scriptRunId).set(documentUpdate, { merge: true })
 
     res.status(204).send()
 })
