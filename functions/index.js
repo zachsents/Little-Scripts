@@ -130,7 +130,7 @@ export const onTriggerWrite = onDocumentWritten(`${TRIGGER_COLLECTION}/{triggerI
             futureScriptRunsSnapshot.docs.forEach(scriptRunDoc => {
                 batch.update(scriptRunDoc.ref, {
                     status: RUN_STATUS.CANCELLED,
-                    cancelReason: "Trigger changed or deleted",
+                    cancelReason: afterTrigger ? "Trigger changed" : "Trigger deleted",
                 })
             })
 
