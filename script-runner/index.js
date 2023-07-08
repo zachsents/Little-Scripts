@@ -21,6 +21,9 @@ initializeApp({
     storageBucket: "little-scripts-391918.appspot.com",
 })
 const db = getFirestore()
+db.settings({
+    ignoreUndefinedProperties: true,
+})
 
 
 // Express setup
@@ -60,6 +63,8 @@ app.post("/", async (req, res) => {
     const fileContents = await file.download()
 
     const promises = []
+    let returnValue
+    let runtimeError
 
     const vm = new NodeVM({
         console: "inherit",
@@ -70,6 +75,15 @@ app.post("/", async (req, res) => {
                 },
                 // TO DO: add functions to return values, store values, etc.
             },
+            _wrapper: (promise) => {
+                promises.push(
+                    promise
+                        .then(result => (returnValue = result))
+                        .catch(err => {
+                            runtimeError = Object.fromEntries(Object.getOwnPropertyNames(err).map(key => [key, err[key]]))
+                        })
+                )
+            }
         },
         require: {
             external: ALLOWED_MODULES,
@@ -79,7 +93,7 @@ app.post("/", async (req, res) => {
     })
 
     vm.run(`
-LittleScript.waitFor((async function() {
+_wrapper((async function() {
     ${fileContents.toString()}
 })())
     `, "user-script.js")
@@ -87,12 +101,18 @@ LittleScript.waitFor((async function() {
     await Promise.all(promises)
 
     if (messageContent.scriptRunId) {
-        await db.collection("script-runs").doc(messageContent.scriptRunId).set({
+        const documentUpdate = runtimeError ? {
+            status: "FAILED",
+            failedAt: FieldValue.serverTimestamp(),
+            failureReason: "Runtime error",
+            runtimeError,
+        } : {
             status: "COMPLETED",
             completedAt: FieldValue.serverTimestamp(),
-        }, { merge: true })
+            returnValue,
+        }
 
-        return res.status(204).send()
+        await db.collection("script-runs").doc(messageContent.scriptRunId).set(documentUpdate, { merge: true })
     }
 
     res.status(204).send()
