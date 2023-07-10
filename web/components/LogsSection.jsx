@@ -27,6 +27,9 @@ export default function LogsSection() {
 
     const [logs, logsQuery] = useStorageFileContent(selectedRun && `script-run-logs/${selectedRunId}.log`)
 
+    const hasReturnValue = selectedRun?.returnValue !== undefined
+    const hasError = !!selectedRun?.runtimeError?.stack
+
     return (
         <>
             <Tabs defaultValue="logs" variant="outline" classNames={{
@@ -37,9 +40,25 @@ export default function LogsSection() {
             }}>
                 <Tabs.List>
                     <Group spacing={0} align="flex-end">
-                        <Tabs.Tab value="logs" icon={<TbFileText />}>Logs</Tabs.Tab>
-                        <Tabs.Tab value="return" icon={<TbArrowForward />}>Return Value</Tabs.Tab>
-                        <Tabs.Tab value="errors" icon={<TbAlertCircle />}>Errors</Tabs.Tab>
+                        <Tabs.Tab
+                            value="logs" icon={<TbFileText />}
+                        >
+                            Logs
+                        </Tabs.Tab>
+
+                        <Tabs.Tab
+                            value="return" icon={<TbArrowForward />}
+                            className={!hasReturnValue && "text-gray"}
+                        >
+                            Return Value
+                        </Tabs.Tab>
+
+                        <Tabs.Tab
+                            value="errors" icon={<TbAlertCircle />}
+                            className={!hasError && "text-gray"}
+                        >
+                            Errors
+                        </Tabs.Tab>
                     </Group>
 
                     <Select
@@ -69,17 +88,17 @@ export default function LogsSection() {
 
                             <Tabs.Panel value="return">
                                 <BetterScroll>
-                                    {selectedRun?.returnValue === undefined ?
-                                        <Text size="sm" color="dimmed" align="center" py="lg">No return value</Text> :
+                                    {hasReturnValue ?
                                         <pre>
                                             {JSON.stringify(selectedRun.returnValue, null, 2)}
-                                        </pre>}
+                                        </pre> :
+                                        <Text size="sm" color="dimmed" align="center" py="lg">No return value</Text>}
                                 </BetterScroll>
                             </Tabs.Panel>
 
                             <Tabs.Panel value="errors">
                                 <BetterScroll>
-                                    {selectedRun?.runtimeError?.stack ?
+                                    {hasError ?
                                         <pre className="text-sm text-red-800">
                                             {selectedRun.runtimeError.stack}
                                         </pre> :
