@@ -1,4 +1,4 @@
-import { collection, doc, query, where } from "firebase/firestore"
+import { collection, doc, limit, orderBy, query, where } from "firebase/firestore"
 import { createContext, useContext } from "react"
 import { useFirestoreCollectionData, useFirestoreDocData } from "reactfire"
 import { fire, useStorageFileContent } from "."
@@ -20,7 +20,7 @@ export function ScriptProvider({ children }) {
         idField: "id",
     })
 
-    const [sourceCode] = useStorageFileContent(`script-source/${scriptId}.js`)
+    const [sourceCode] = useStorageFileContent(scriptId && `script-source/${scriptId}.js`)
 
     const { data: triggers, status: triggersStatus } = useFirestoreCollectionData(query(
         collection(fire.db, "triggers"),
@@ -31,7 +31,9 @@ export function ScriptProvider({ children }) {
 
     const { data: runs, status: runsStatus } = useFirestoreCollectionData(query(
         collection(fire.db, "script-runs"),
-        where("script", "==", scriptDocRef)
+        where("script", "==", scriptDocRef),
+        orderBy("startedAt", "desc"),
+        limit(100),
     ), {
         idField: "id",
     })

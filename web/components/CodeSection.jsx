@@ -1,11 +1,11 @@
-import { Button, Group, Select, Tabs, Text, Tooltip } from "@mantine/core"
-import MonacoEditor from "@monaco-editor/react"
-import { useMainStore } from "@web/modules/store"
-import { useState } from "react"
-import { TbCodeDots, TbFileText } from "react-icons/tb"
+import { Button, Group, Tabs, Text, Tooltip } from "@mantine/core"
 import { modals } from "@mantine/modals"
+import MonacoEditor from "@monaco-editor/react"
 import { useScript, useSetStorageFileContent } from "@web/modules/firebase"
-import { useEffect } from "react"
+import { useMainStore } from "@web/modules/store"
+import { useEffect, useState } from "react"
+import { TbCodeDots, TbRun } from "react-icons/tb"
+import LogsSection from "./LogsSection"
 
 
 export default function CodeSection() {
@@ -15,7 +15,7 @@ export default function CodeSection() {
     const setConfigTab = useMainStore(s => s.setConfigTab)
 
     const { script } = useScript()
-    const code = script.sourceCode || ""
+    const code = script?.sourceCode || ""
 
     const [workingCode, setWorkingCode] = useState(code)
 
@@ -43,6 +43,8 @@ export default function CodeSection() {
         onConfirm: discard,
     })
 
+
+
     return (
         <Tabs
             value={editorTab} onTabChange={setEditorTab}
@@ -55,7 +57,7 @@ export default function CodeSection() {
             <Tabs.List>
                 <Group spacing={0}>
                     <Tabs.Tab value="code" icon={<TbCodeDots />}>Code</Tabs.Tab>
-                    <Tabs.Tab value="logs" icon={<TbFileText />}>Logs</Tabs.Tab>
+                    <Tabs.Tab value="logs" icon={<TbRun />}>Runs</Tabs.Tab>
                 </Group>
 
                 <Tooltip label="View Billing">
@@ -106,13 +108,7 @@ export default function CodeSection() {
             </Tabs.Panel>
 
             <Tabs.Panel value="logs" className={editorTab === "logs" && "flex"}>
-                <Group px="xs" py="xxs" bg="gray.0" position="right">
-                    <Select
-                        size="sm"
-                        data={["December 2, 2022", "December 1, 2022", "November 30, 2022"]}
-                        placeholder="Select a run"
-                    />
-                </Group>
+                <LogsSection />
             </Tabs.Panel>
 
         </Tabs>
