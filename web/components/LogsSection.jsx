@@ -2,6 +2,7 @@ import { Center, Group, Loader, Select, Tabs, Text } from "@mantine/core"
 import { useScript, useStorageFileContent } from "@web/modules/firebase"
 import { useEffect, useState } from "react"
 import { TbAlertCircle, TbArrowForward, TbFileText } from "react-icons/tb"
+import { RUN_STATUS } from "shared"
 import BetterScroll from "./BetterScroll"
 
 
@@ -28,7 +29,7 @@ export default function LogsSection() {
     const [logs, logsQuery] = useStorageFileContent(selectedRun && `script-run-logs/${selectedRunId}.log`)
 
     const hasReturnValue = selectedRun?.returnValue !== undefined
-    const hasError = !!selectedRun?.runtimeError?.stack
+    const hasFailed = selectedRun?.status === RUN_STATUS.FAILED
 
     return (
         <>
@@ -55,7 +56,7 @@ export default function LogsSection() {
 
                         <Tabs.Tab
                             value="errors" icon={<TbAlertCircle />}
-                            className={!hasError && "text-gray"}
+                            className={!hasFailed && "text-gray"}
                         >
                             Errors
                         </Tabs.Tab>
@@ -98,10 +99,14 @@ export default function LogsSection() {
 
                             <Tabs.Panel value="errors">
                                 <BetterScroll>
-                                    {hasError ?
-                                        <pre className="text-sm text-red-800">
-                                            {selectedRun.runtimeError.stack}
-                                        </pre> :
+                                    {hasFailed ?
+                                        <div>
+                                            <p className="font-bold font-mono text-red-800 bg-gray-100 px-md py-xxs rounded">{selectedRun?.failureReason}</p>
+                                            {selectedRun?.runtimeError?.stack &&
+                                                <pre className="text-sm text-red-800">
+                                                    {selectedRun.runtimeError.stack}
+                                                </pre>}
+                                        </div> :
                                         <Text size="sm" color="dimmed" align="center" py="lg">No errors</Text>}
                                 </BetterScroll>
                             </Tabs.Panel>
