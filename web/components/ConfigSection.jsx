@@ -8,6 +8,9 @@ import BillingConfig from "./BillingConfig"
 import ConfigPanel from "./ConfigPanel"
 import SelectedTriggerConfig from "./SelectedTriggerConfig"
 import TriggersConfig from "./TriggersConfig"
+import { useState } from "react"
+import EditableText from "./EditableText"
+import { updateDoc } from "firebase/firestore"
 
 
 const ICON_SIZE = "1.5rem"
@@ -24,12 +27,26 @@ export default function ConfigSection() {
 
     const [confirmDelete, deleteQuery] = useDeleteScript()
 
+    const [isRenamingTitle, setIsRenamingTitle] = useState(false)
+    const rename = async newName => {
+        await updateDoc(script?.ref, { name: newName })
+        setIsRenamingTitle(false)
+    }
+
     return (
         <Stack w="22rem">
             <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart">
-                <Title order={3}>
-                    {script?.name}
-                </Title>
+                {isRenamingTitle ?
+                    <EditableText
+                        highlight
+                        initialValue={script?.name}
+                        onEdit={rename}
+                        onCancel={() => setIsRenamingTitle(false)}
+                        size="sm"
+                    /> :
+                    <Title order={3}>
+                        {script?.name}
+                    </Title>}
 
                 <Menu shadow="sm">
                     <Menu.Target>
@@ -41,7 +58,7 @@ export default function ConfigSection() {
                         </ActionIcon>
                     </Menu.Target>
                     <Menu.Dropdown>
-                        <Menu.Item icon={<TbPencil />}>
+                        <Menu.Item icon={<TbPencil />} onClick={() => setIsRenamingTitle(true)}>
                             Rename Script
                         </Menu.Item>
                         <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>

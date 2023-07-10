@@ -61,6 +61,7 @@ export function ScriptProvider({ children }) {
         <scriptContext.Provider value={{
             script: {
                 ...scriptData,
+                ref: scriptDocRef,
                 sourceCode,
                 triggers,
                 runs,

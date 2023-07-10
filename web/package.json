@@ -17,6 +17,7 @@
         "@mantine/modals": "^6.0.16",
         "@mantine/notifications": "^6.0.16",
         "@monaco-editor/react": "^4.5.1",
+        "classnames": "^2.3.2",
         "dayjs": "^1.11.9",
         "firebase": "^9.23.0",
         "framer-motion": "^10.12.18",
@@ -27,9 +28,9 @@
         "react-icons": "^4.10.1",
         "react-query": "^3.39.3",
         "reactfire": "^4.2.3",
+        "shared": "workspace:*",
         "unique-names-generator": "^4.7.1",
-        "zustand": "^4.3.9",
-        "shared": "workspace:*"
+        "zustand": "^4.3.9"
     },
     "devDependencies": {
         "@types/node": "^17.0.12",
