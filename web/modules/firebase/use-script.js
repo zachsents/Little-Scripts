@@ -5,6 +5,8 @@ import { fire, useStorageFileContent } from "."
 import { useScriptIdFromRouter } from "../util"
 import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, getLastBillingCycleStartDate } from "shared"
 import { useFirestoreCount } from "./use-count-query"
+import { useRouter } from "next/router"
+import { useEffect } from "react"
 
 
 const scriptContext = createContext({
@@ -15,12 +17,19 @@ const scriptContext = createContext({
 
 export function ScriptProvider({ children }) {
 
+    const router = useRouter()
+
     const scriptId = useScriptIdFromRouter()
     const scriptDocRef = doc(fire.db, SCRIPT_COLLECTION, scriptId ?? "placeholder")
 
     const { data: scriptData, status: scriptStatus } = useFirestoreDocData(scriptDocRef, {
         idField: "id",
     })
+
+    useEffect(() => {
+        if (scriptId && scriptStatus === "success" && !scriptData)
+            router.replace("/")
+    }, [scriptId, scriptData, scriptStatus])
 
     const [sourceCode] = useStorageFileContent(scriptId && `script-source/${scriptId}.js`)
 

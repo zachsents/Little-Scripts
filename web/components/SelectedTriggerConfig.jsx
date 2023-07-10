@@ -33,7 +33,10 @@ export default function SelectedTriggerConfig() {
                     </Group>
 
                     <Tooltip label="Delete Trigger" withinPortal>
-                        <ActionIcon onClick={confirmDelete} loading={deleteQuery.isFetching}>
+                        <ActionIcon
+                            onClick={confirmDelete} loading={deleteQuery.isFetching}
+                            className="hover:bg-gray-200"
+                        >
                             <TbTrash />
                         </ActionIcon>
                     </Tooltip>

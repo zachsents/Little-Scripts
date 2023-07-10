@@ -1,12 +1,13 @@
-import { Stack, Tabs, Text, Title, Tooltip } from "@mantine/core"
-import { useMainStore } from "@web/modules/store"
-import { TbChartLine, TbReportMoney, TbRun } from "react-icons/tb"
-import BillingConfig from "./BillingConfig"
-import TriggersConfig from "./TriggersConfig"
-import ConfigPanel from "./ConfigPanel"
+import { ActionIcon, Group, Menu, Stack, Tabs, Text, Title, Tooltip } from "@mantine/core"
 import { useScript } from "@web/modules/firebase"
+import { useMainStore } from "@web/modules/store"
 import { useSelectedTrigger } from "@web/modules/triggers"
+import { useDeleteScript } from "@web/modules/util"
+import { TbChartLine, TbDots, TbPencil, TbReportMoney, TbRun, TbTrash } from "react-icons/tb"
+import BillingConfig from "./BillingConfig"
+import ConfigPanel from "./ConfigPanel"
 import SelectedTriggerConfig from "./SelectedTriggerConfig"
+import TriggersConfig from "./TriggersConfig"
 
 
 const ICON_SIZE = "1.5rem"
@@ -21,11 +22,34 @@ export default function ConfigSection() {
 
     const selectedTrigger = useSelectedTrigger()
 
+    const [confirmDelete, deleteQuery] = useDeleteScript()
+
     return (
         <Stack w="22rem">
-            <Title order={3} className="bg-gray-100 rounded-lg px-lg py-xs">
-                {script?.name}
-            </Title>
+            <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart">
+                <Title order={3}>
+                    {script?.name}
+                </Title>
+
+                <Menu shadow="sm">
+                    <Menu.Target>
+                        <ActionIcon
+                            loading={deleteQuery.isFetching}
+                            className="hover:bg-gray-200"
+                        >
+                            <TbDots />
+                        </ActionIcon>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Item icon={<TbPencil />}>
+                            Rename Script
+                        </Menu.Item>
+                        <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
+                            Delete Script
+                        </Menu.Item>
+                    </Menu.Dropdown>
+                </Menu>
+            </Group>
 
             <Tabs
                 orientation="vertical" variant="pills"

@@ -1,10 +1,10 @@
 import { modals } from "@mantine/modals"
-import { fire } from "@web/modules/firebase"
-import { deleteDoc, doc } from "firebase/firestore"
+import { fire, useScript } from "@web/modules/firebase"
+import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { TRIGGER_COLLECTION } from "shared"
+import { SCRIPT_COLLECTION, TRIGGER_COLLECTION } from "shared"
 
 
 export function useScriptIdFromRouter() {
@@ -29,6 +29,37 @@ export function useDeleteTrigger(triggerId) {
 
     const confirmDelete = () => modals.openConfirmModal({
         title: "Are you sure you want to delete this trigger?",
+        labels: { confirm: "Delete", cancel: "Keep it" },
+        confirmProps: { color: "red" },
+        onConfirm: deleteQuery.refetch,
+    })
+
+    return [confirmDelete, deleteQuery]
+}
+
+
+export function useDeleteScript() {
+
+    const { script } = useScript()
+
+    const deleteQuery = useQuery({
+        queryKey: ["delete-script", script?.id],
+        queryFn: async () => {
+            const triggersSnapshot = await getDocs(query(
+                collection(fire.db, TRIGGER_COLLECTION),
+                where("script", "==", doc(fire.db, SCRIPT_COLLECTION, script?.id))
+            ))
+
+            const batch = writeBatch(fire.db)
+            triggersSnapshot.docs.forEach(doc => batch.delete(doc.ref))
+            batch.delete(doc(fire.db, SCRIPT_COLLECTION, script?.id))
+            await batch.commit()
+        },
+        enabled: false,
+    })
+
+    const confirmDelete = () => modals.openConfirmModal({
+        title: "Are you sure you want to delete this script?",
         labels: { confirm: "Delete", cancel: "Keep it" },
         confirmProps: { color: "red" },
         onConfirm: deleteQuery.refetch,

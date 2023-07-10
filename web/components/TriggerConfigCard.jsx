@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Loader, Menu, Overlay, Stack, Text, Tooltip } from "@mantine/core"
+import { ActionIcon, Group, Menu, Overlay, Stack, Text, Tooltip } from "@mantine/core"
 import { useMainStore } from "@web/modules/store"
 import { TriggerInfo } from "@web/modules/triggers"
 import { useDeleteTrigger } from "@web/modules/util"
@@ -37,26 +37,24 @@ export default function TriggerConfigCard({ trigger }) {
                 </Group>
             </Tooltip>
 
-            {isLoading ?
-                <Loader size="xs" /> :
-                <Menu shadow="xs" withinPortal>
-                    <Menu.Target>
-                        <ActionIcon
-                            onClick={event => event.stopPropagation()}
-                            className="hover:bg-gray-100"
-                        >
-                            <TbDots />
-                        </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Item icon={<TbPencil />} onClick={() => setSelectedTrigger(trigger.id)}>
-                            Edit
-                        </Menu.Item>
-                        <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
-                            Delete
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>}
+            <Menu shadow="xs" withinPortal>
+                <Menu.Target>
+                    <ActionIcon
+                        onClick={event => event.stopPropagation()}
+                        loading={isLoading}
+                    >
+                        <TbDots />
+                    </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                    <Menu.Item icon={<TbPencil />} onClick={() => setSelectedTrigger(trigger.id)}>
+                        Edit
+                    </Menu.Item>
+                    <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
+                        Delete
+                    </Menu.Item>
+                </Menu.Dropdown>
+            </Menu>
         </Group>
     )
 }
