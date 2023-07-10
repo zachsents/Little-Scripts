@@ -34,10 +34,11 @@ export const TriggerInfo = {
                     console.debug("Script run created:", newDocRef.id)
 
                     return new Promise(resolve => {
-                        onSnapshot(newDocRef, snapshot => {
+                        const unsubscribe = onSnapshot(newDocRef, snapshot => {
                             const data = snapshot.data()
                             if (isStatusFinished(data?.status)) {
                                 console.debug(data)
+                                unsubscribe()
                                 resolve()
                             }
                         })
