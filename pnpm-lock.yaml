@@ -88,7 +88,9 @@ importers:
       react-icons: ^4.10.1
       react-query: ^3.39.3
       reactfire: ^4.2.3
+      shared: workspace:*
       tailwindcss: ^3.3.2
+      unique-names-generator: ^4.7.1
       zustand: ^4.3.9
     dependencies:
       '@emotion/react': 11.11.1_3pi6y6cylzraaxxtldk4o6b3zi
@@ -109,6 +111,8 @@ importers:
       react-icons: 4.10.1_react@18.2.0
       react-query: 3.39.3_biqbaboplfbrettd7655fr4n2y
       reactfire: 4.2.3_zgscpus5gwk5gnmmnzj6x3coe4
+      shared: link:../shared
+      unique-names-generator: 4.7.1
       zustand: 4.3.9_react@18.2.0
     devDependencies:
       '@types/node': 17.0.45
@@ -7890,6 +7894,11 @@ packages:
 
   /underscore/1.13.6:
     resolution: {integrity: sha512-+A5Sja4HP1M08MaXya7p5LvjuM7K6q/2EaC0+iovj/wOcMsTzMvDFbasi/oSapiwOlt252IqsKqPjCl7huKS0A==}
+
+  /unique-names-generator/4.7.1:
+    resolution: {integrity: sha512-lMx9dX+KRmG8sq6gulYYpKWZc9RlGsgBR6aoO8Qsm3qvkSJ+3rAymr+TnV8EDMrIrwuFJ4kruzMWM/OpYzPoow==}
+    engines: {node: '>=8'}
+    dev: false
 
   /universalify/0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}

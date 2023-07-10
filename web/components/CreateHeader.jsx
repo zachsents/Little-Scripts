@@ -1,5 +1,6 @@
-import { Anchor, Group } from "@mantine/core"
+import { Anchor, Group, Text } from "@mantine/core"
 import Brand from "./Brand"
+import Link from "next/link"
 
 export default function CreateHeader() {
 
@@ -8,13 +9,17 @@ export default function CreateHeader() {
             <Group position="apart" className="w-full">
                 <Group>
                     <Brand />
-                    <Anchor href="/create">Create New Script</Anchor>
-                    <Anchor href="/create">About</Anchor>
-                    <Anchor href="/create">Pricing</Anchor>
+                    <Link href="/create">
+                        <Text>Create New Script</Text>
+                    </Link>
+                    <Anchor href="/">About</Anchor>
+                    <Anchor href="/">Pricing</Anchor>
                 </Group>
 
                 <Group>
-                    <Anchor href="/create">Sign In</Anchor>
+                    <Link href="/login">
+                        <Text>Login</Text>
+                    </Link>
                 </Group>
             </Group>
         </div>

@@ -1,9 +1,11 @@
 import "../styles/globals.css"
+import "@web/modules/firebase"
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 import { QueryClient, QueryClientProvider } from "react-query"
 import { Notifications } from "@mantine/notifications"
 import { mantineTheme } from "@web/theme"
+
 
 const queryClient = new QueryClient()
 

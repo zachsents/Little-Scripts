@@ -137,7 +137,7 @@ export const onTriggerWrite = onDocumentWritten(`${TRIGGER_COLLECTION}/{triggerI
             await batch.commit()
         }
 
-        if (afterTrigger) {
+        if (afterTrigger && afterTrigger.schedule) {
             await db.collection(SCRIPT_RUN_COLLECTION).add({
                 script: afterTrigger.script,
                 trigger: event.data.after.ref,

@@ -11,5 +11,11 @@ export const RUN_STATUS = {
 
 
 export const TRIGGER_TYPE = {
+    MANUAL: "trigger.manual",
     RECURRING_SCHEDULE: "trigger.recurring-schedule",
+}
+
+
+export function isStatusFinished(status) {
+    return status === RUN_STATUS.COMPLETED || status === RUN_STATUS.FAILED || status === RUN_STATUS.CANCELLED
 }

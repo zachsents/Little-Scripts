@@ -7,16 +7,9 @@ export const useMainStore = create((set) => ({
     editorTab: "code",
     setEditorTab: (tab) => set({ editorTab: tab }),
 
-    code: `
-// This is a comment
-// This is another comment
-// This is a third comment
-// This is a fourth comment
-`,
+    selectedTrigger: null,
+    setSelectedTrigger: (triggerId) => set({ selectedTrigger: triggerId }),
+
     isCodeDirty: false,
-    saveCode: (newCode) => set({
-        isCodeDirty: false,
-        code: newCode,
-    }),
     setCodeDirty: (isDirty = true) => set({ isCodeDirty: isDirty }),
 }))

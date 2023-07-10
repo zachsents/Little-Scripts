@@ -4,6 +4,8 @@ import { useMainStore } from "@web/modules/store"
 import { useState } from "react"
 import { TbCodeDots, TbFileText } from "react-icons/tb"
 import { modals } from "@mantine/modals"
+import { useScript, useSetStorageFileContent } from "@web/modules/firebase"
+import { useEffect } from "react"
 
 
 export default function CodeSection() {
@@ -12,22 +14,27 @@ export default function CodeSection() {
     const setEditorTab = useMainStore(s => s.setEditorTab)
     const setConfigTab = useMainStore(s => s.setConfigTab)
 
-
-    const code = useMainStore(s => s.code)
-    const isCodeDirty = useMainStore(s => s.isCodeDirty)
-    const _saveCode = useMainStore(s => s.saveCode)
-    const setCodeDirty = useMainStore(s => s.setCodeDirty)
+    const { script } = useScript()
+    const code = script.sourceCode || ""
 
     const [workingCode, setWorkingCode] = useState(code)
 
-    const save = () => {
-        _saveCode(workingCode)
+    const isCodeDirty = useMainStore(s => s.isCodeDirty)
+    const setCodeDirty = useMainStore(s => s.setCodeDirty)
+
+    const [_save, saveQuery] = useSetStorageFileContent(`script-source/${script?.id}.js`, workingCode)
+
+    const save = async () => {
+        await _save()
+        setCodeDirty(false)
     }
 
     const discard = () => {
         setWorkingCode(code)
         setCodeDirty(false)
     }
+
+    useEffect(discard, [code])
 
     const confirmDiscard = () => modals.openConfirmModal({
         title: "Are you sure you want to discard your changes?",
@@ -70,6 +77,7 @@ export default function CodeSection() {
                             <Button
                                 compact size="sm"
                                 onClick={save}
+                                loading={saveQuery.isFetching}
                             >
                                 Save
                             </Button>
