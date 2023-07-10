@@ -6,7 +6,7 @@ import { TriggerInfo } from "@web/modules/triggers"
 import { addDoc, collection, doc } from "firebase/firestore"
 import { TbPlus } from "react-icons/tb"
 import { useQuery } from "react-query"
-import { TRIGGER_TYPE } from "shared"
+import { TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import ConfigPanel from "./ConfigPanel"
 import TriggerConfigCard from "./TriggerConfigCard"
 
@@ -72,7 +72,7 @@ function TriggerTypeButton({ type, onCreate }) {
     const createQuery = useQuery({
         queryKey: ["create-trigger", type],
         queryFn: async () => {
-            const newDocRef = await addDoc(collection(fire.db, "triggers"), {
+            const newDocRef = await addDoc(collection(fire.db, TRIGGER_COLLECTION), {
                 type,
                 script: doc(fire.db, "scripts", script.id),
             })

@@ -6,6 +6,7 @@ import { useMainStore } from "@web/modules/store"
 import { useEffect, useState } from "react"
 import { TbCodeDots, TbRun } from "react-icons/tb"
 import LogsSection from "./LogsSection"
+import { COST_PER_RUN } from "shared"
 
 
 export default function CodeSection() {
@@ -66,7 +67,7 @@ export default function CodeSection() {
                         onClick={() => setConfigTab("billing")}
                     >
                         <Text size="sm" color="dimmed">Cost Per Run</Text>
-                        <Text>$0.01</Text>
+                        <Text>${COST_PER_RUN}</Text>
                     </Group>
                 </Tooltip>
             </Tabs.List>

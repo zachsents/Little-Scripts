@@ -4,6 +4,7 @@ import { deleteDoc, doc } from "firebase/firestore"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
+import { TRIGGER_COLLECTION } from "shared"
 
 
 export function useScriptIdFromRouter() {
@@ -22,7 +23,7 @@ export function useIsClient() {
 export function useDeleteTrigger(triggerId) {
     const deleteQuery = useQuery({
         queryKey: ["delete-trigger", triggerId],
-        queryFn: () => deleteDoc(doc(fire.db, "triggers", triggerId)),
+        queryFn: () => deleteDoc(doc(fire.db, TRIGGER_COLLECTION, triggerId)),
         enabled: false,
     })
 

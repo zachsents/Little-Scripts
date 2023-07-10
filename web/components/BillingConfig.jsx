@@ -1,12 +1,19 @@
 import { Badge, Button, Group, Progress, Stack, Table, Text, Tooltip } from "@mantine/core"
+import { useScript } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { TbArrowBigUpLines, TbChartLine } from "react-icons/tb"
+import { COST_PER_RUN, MAX_FREE_RUNS, getLastBillingCycleStartDate, getNextBillingCycleStartDate } from "shared"
 import ConfigPanel from "./ConfigPanel"
 
 
 export default function BillingConfig() {
 
+
     const setConfigTab = useMainStore(s => s.setConfigTab)
+
+    const { script } = useScript()
+    const freeRunsUsed = Math.min(script.runCount, MAX_FREE_RUNS)
+    const billableRuns = Math.max(0, script.runCount - MAX_FREE_RUNS)
 
     return (
         <ConfigPanel title="Billing">
@@ -26,11 +33,18 @@ export default function BillingConfig() {
                 <Stack spacing="xs">
                     <Text color="dimmed" fz="sm">Free Usage</Text>
                     <Stack spacing="xxs">
-                        <Text>
-                            <span className="text-primary font-bold">30 / 100</span>
-                            {" "}free runs used
-                        </Text>
-                        <Progress value={30} />
+                        <div>
+                            <Text>
+                                <span className="text-primary font-bold">{freeRunsUsed} / {MAX_FREE_RUNS}</span>
+                                {" "}free runs used
+                            </Text>
+
+                            <Text size="xs" color="dimmed">Since {getLastBillingCycleStartDate().toLocaleDateString(undefined, {
+                                dateStyle: "medium",
+                            })}</Text>
+                        </div>
+
+                        <Progress value={freeRunsUsed / MAX_FREE_RUNS * 100} />
                     </Stack>
 
                     <div>
@@ -50,11 +64,11 @@ export default function BillingConfig() {
                         <tbody>
                             <tr>
                                 <td className="font-bold">Total Runs</td>
-                                <td className="text-end">532</td>
+                                <td className="text-end">{script.runCount}</td>
                             </tr>
                             <tr>
                                 <td className="font-bold">Billable Runs</td>
-                                <td className="text-end">432</td>
+                                <td className="text-end">{billableRuns}</td>
                             </tr>
                             <Tooltip
                                 label="Will be billed to the attached account on Aug 1, 2023"
@@ -62,13 +76,15 @@ export default function BillingConfig() {
                             >
                                 <tr>
                                     <td className="font-bold">Balance</td>
-                                    <td className="text-end text-orange font-bold">$4.32</td>
+                                    <td className="text-end text-orange font-bold">${billableRuns * COST_PER_RUN}</td>
                                 </tr>
                             </Tooltip>
                         </tbody>
                     </Table>
 
-                    <Text size="xs" color="dimmed">Resets Aug 1, 2023</Text>
+                    <Text size="xs" color="dimmed">Resets {getNextBillingCycleStartDate().toLocaleDateString(undefined, {
+                        dateStyle: "medium",
+                    })}</Text>
                 </Stack>
             </Stack>
 

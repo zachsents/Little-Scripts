@@ -16,6 +16,15 @@ export const TRIGGER_TYPE = {
 }
 
 
+export const SCRIPT_RUN_COLLECTION = "script-runs"
+export const TRIGGER_COLLECTION = "triggers"
+export const SCRIPT_COLLECTION = "scripts"
+
+
+export const MAX_FREE_RUNS = 100
+export const COST_PER_RUN = 0.01
+
+
 export function isStatusFinished(status) {
     return status === RUN_STATUS.COMPLETED || status === RUN_STATUS.FAILED || status === RUN_STATUS.CANCELLED
 }

@@ -5,7 +5,7 @@ import ScheduleBuilder from "@web/components/ScheduleBuilder"
 import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore"
 import { TbClock, TbHandClick, TbRun } from "react-icons/tb"
 import { useQuery } from "react-query"
-import { RUN_STATUS, TRIGGER_TYPE, isStatusFinished } from "shared"
+import { RUN_STATUS, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, TRIGGER_TYPE, isStatusFinished } from "shared"
 import { fire, useScript } from "./firebase"
 import { useMainStore } from "./store"
 import { useQueryWithPayload } from "./util"
@@ -25,9 +25,9 @@ export const TriggerInfo = {
             const runQuery = useQuery({
                 queryKey: ["run-trigger", trigger.id],
                 queryFn: async () => {
-                    const newDocRef = await addDoc(collection(fire.db, "script-runs"), {
+                    const newDocRef = await addDoc(collection(fire.db, SCRIPT_RUN_COLLECTION), {
                         script: trigger.script,
-                        trigger: doc(fire.db, "triggers", trigger.id),
+                        trigger: doc(fire.db, TRIGGER_COLLECTION, trigger.id),
                         status: RUN_STATUS.PENDING,
                     })
 
@@ -36,7 +36,7 @@ export const TriggerInfo = {
                     return new Promise(resolve => {
                         onSnapshot(newDocRef, snapshot => {
                             const data = snapshot.data()
-                            if (isStatusFinished(data.status)) {
+                            if (isStatusFinished(data?.status)) {
                                 console.debug(data)
                                 resolve()
                             }
@@ -77,7 +77,7 @@ export const TriggerInfo = {
             const setSelectedTrigger = useMainStore(s => s.setSelectedTrigger)
 
             const [saveNewSchedule, saveQuery] = useQueryWithPayload(async newSchedule => {
-                await updateDoc(doc(fire.db, "triggers", trigger.id), {
+                await updateDoc(doc(fire.db, TRIGGER_COLLECTION, trigger.id), {
                     schedule: newSchedule,
                 })
             }, {

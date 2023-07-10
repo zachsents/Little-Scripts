@@ -5,11 +5,8 @@ import { onTaskDispatched } from "firebase-functions/v2/tasks"
 
 import { db, functions, pubsub } from "./init.js"
 import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
-import { RUN_STATUS, TRIGGER_TYPE } from "shared"
-
-
-const SCRIPT_RUN_COLLECTION = "script-runs"
-const TRIGGER_COLLECTION = "triggers"
+import { MAX_FREE_RUNS, RUN_STATUS, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
+import { countExistingRuns } from "./queries.js"
 
 
 /**
@@ -47,6 +44,22 @@ export const onScriptRunWritten = onDocumentWritten(`${SCRIPT_RUN_COLLECTION}/{s
     const scriptRun = event.data.after.data()
 
     if (scriptRun.status === RUN_STATUS.PENDING) {
+
+        // TO DO: only do this if the script is on the free tier
+        const existingRunsCount = await countExistingRuns(scriptRun.script)
+        if (existingRunsCount >= MAX_FREE_RUNS) {
+            logger.info(`Free tier run limit reached (${event.data.after.id})`)
+
+            await db.collection(SCRIPT_RUN_COLLECTION).doc(event.data.after.id).update({
+                status: RUN_STATUS.FAILED,
+                failedAt: FieldValue.serverTimestamp(),
+                failureReason: "Free tier run limit reached",
+            })
+
+            return
+        }
+
+
         logger.info(`Beginning script run (${event.data.after.id})`)
 
         await db.collection(SCRIPT_RUN_COLLECTION).doc(event.data.after.id).update({
