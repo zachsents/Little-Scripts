@@ -19,13 +19,15 @@ export default function ScriptsPage() {
                         <Center>
                             <Loader size="xs" />
                         </Center> :
-                        scripts?.length == 0 ?
-                            <Text color="dimmed" size="sm" align="center">No scripts</Text> :
-                            <SimpleGrid cols={2}>
+                        scripts?.length > 0 ?
+                            <SimpleGrid miw="20rem" cols={scripts.length > 5 ? 2 : 1}>
                                 {scripts?.map(script =>
                                     <ScriptItem script={script} icon={TbScript} key={script.id} />
                                 )}
-                            </SimpleGrid>}
+                            </SimpleGrid> :
+                            <Text color="dimmed" size="sm" align="center">
+                                No scripts
+                            </Text>}
                 </Stack>
             </Center>
         </Stack>

@@ -1,7 +1,7 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth"
-import { getFirestore } from "firebase/firestore"
+import { connectFirestoreEmulator, getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
 
@@ -23,12 +23,11 @@ const db = getFirestore(app)
 const storage = getStorage(app)
 const auth = getAuth(app)
 
-export const fire = {
-    app,
-    analytics,
-    db,
-    storage,
-    auth,
+
+if (process.env.NODE_ENV == "development" || process.env.NODE_ENV == "test") {
+    // connectFunctionsEmulator(functions, "localhost", functionsEmulatorPort)
+    if (!db._settingsFrozen)
+        connectFirestoreEmulator(db, "localhost", 8080)
 }
 
 
@@ -40,6 +39,14 @@ onAuthStateChanged(auth, user => {
         signInAnonymously(auth)
 })
 
+
+export const fire = {
+    app,
+    analytics,
+    db,
+    storage,
+    auth,
+}
 
 export * from "./storage"
 export * from "./use-script"
