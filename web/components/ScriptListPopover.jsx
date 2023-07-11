@@ -1,24 +1,13 @@
 import { Center, Loader, Popover, ScrollArea, Stack, Text } from "@mantine/core"
-import { fire } from "@web/modules/firebase"
-import { collection, query, where } from "firebase/firestore"
-import { TbScript } from "react-icons/tb"
-import { useFirestoreCollectionData, useUser } from "reactfire"
-import { SCRIPT_COLLECTION } from "shared"
-import ScriptItem from "./ScriptRowItem"
 import { useDisclosure } from "@mantine/hooks"
+import { useMyScripts } from "@web/modules/firebase/use-my-scripts"
+import { TbScript } from "react-icons/tb"
+import ScriptItem from "./ScriptRowItem"
 
 export default function ScriptListPopover({ children }) {
 
-    const { data: user } = useUser()
-
     const [opened, handlers] = useDisclosure(false)
-
-    const { data: scripts, status } = useFirestoreCollectionData(query(
-        collection(fire.db, SCRIPT_COLLECTION),
-        where("owner", "==", user?.uid ?? "none"),
-    ), {
-        idField: "id",
-    })
+    const { data: scripts, status } = useMyScripts()
 
     return (
         <Popover

@@ -40,6 +40,7 @@ export function useDeleteTrigger(triggerId) {
 
 export function useDeleteScript() {
 
+    const router = useRouter()
     const { script } = useScript()
 
     const deleteQuery = useQuery({
@@ -56,6 +57,7 @@ export function useDeleteScript() {
             triggersSnapshot.docs.forEach(doc => batch.delete(doc.ref))
             batch.delete(scriptDocRef)
             await batch.commit()
+            router.push("/scripts")
         },
         enabled: false,
     })
