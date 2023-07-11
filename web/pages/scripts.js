@@ -15,17 +15,17 @@ export default function ScriptsPage() {
                 <Stack>
                     <Title order={2}>My Scripts</Title>
 
-                    <SimpleGrid cols={2}>
-                        {status == "loading" ?
-                            <Center>
-                                <Loader size="xs" />
-                            </Center> :
-                            scripts?.length == 0 ?
-                                <Text color="dimmed" size="sm" align="center">No scripts</Text> :
-                                scripts?.map(script =>
+                    {status == "loading" ?
+                        <Center>
+                            <Loader size="xs" />
+                        </Center> :
+                        scripts?.length == 0 ?
+                            <Text color="dimmed" size="sm" align="center">No scripts</Text> :
+                            <SimpleGrid cols={2}>
+                                {scripts?.map(script =>
                                     <ScriptItem script={script} icon={TbScript} key={script.id} />
                                 )}
-                    </SimpleGrid>
+                            </SimpleGrid>}
                 </Stack>
             </Center>
         </Stack>
