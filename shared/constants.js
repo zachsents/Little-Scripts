@@ -19,6 +19,7 @@ export const TRIGGER_TYPE = {
 export const SCRIPT_RUN_COLLECTION = "script-runs"
 export const TRIGGER_COLLECTION = "triggers"
 export const SCRIPT_COLLECTION = "scripts"
+export const USER_COLLECTION = "users"
 
 
 export const MAX_FREE_RUNS = 100

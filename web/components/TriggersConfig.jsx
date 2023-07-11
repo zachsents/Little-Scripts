@@ -4,7 +4,7 @@ import { fire, useScript } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { TriggerInfo } from "@web/modules/triggers"
 import { addDoc, collection, doc } from "firebase/firestore"
-import { TbPlus } from "react-icons/tb"
+import { TbArrowUp, TbPlus } from "react-icons/tb"
 import { useQuery } from "react-query"
 import { TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import ConfigPanel from "./ConfigPanel"
@@ -56,6 +56,11 @@ export default function TriggersConfig() {
                 {script?.triggers?.map(trigger =>
                     <TriggerConfigCard trigger={trigger} key={trigger.id} />
                 )}
+
+                {!script?.triggers?.length &&
+                    <Text color="dimmed" size="sm" align="center">
+                        No triggers. Create one! <TbArrowUp />
+                    </Text>}
             </Stack>
         </ConfigPanel>
     )

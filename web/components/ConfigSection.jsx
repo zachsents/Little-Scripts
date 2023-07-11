@@ -35,7 +35,7 @@ export default function ConfigSection() {
 
     return (
         <Stack w="22rem">
-            <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart">
+            <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart" noWrap>
                 {isRenamingTitle ?
                     <EditableText
                         highlight

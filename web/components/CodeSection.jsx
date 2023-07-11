@@ -5,8 +5,8 @@ import { useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useEffect, useState } from "react"
 import { TbCodeDots, TbRun } from "react-icons/tb"
-import LogsSection from "./LogsSection"
 import { COST_PER_RUN } from "shared"
+import LogsSection from "./LogsSection"
 
 
 export default function CodeSection() {
@@ -45,7 +45,6 @@ export default function CodeSection() {
     })
 
 
-
     return (
         <Tabs
             value={editorTab} onTabChange={setEditorTab}
@@ -61,15 +60,17 @@ export default function CodeSection() {
                     <Tabs.Tab value="logs" icon={<TbRun />}>Runs</Tabs.Tab>
                 </Group>
 
-                <Tooltip label="View Billing">
-                    <Group
-                        className="cursor-pointer"
-                        onClick={() => setConfigTab("billing")}
-                    >
-                        <Text size="sm" color="dimmed">Cost Per Run</Text>
-                        <Text>${COST_PER_RUN}</Text>
-                    </Group>
-                </Tooltip>
+                <Group spacing="xl">
+                    <Tooltip label="View Billing">
+                        <Group
+                            className="cursor-pointer"
+                            onClick={() => setConfigTab("billing")}
+                        >
+                            <Text size="sm" color="dimmed">Cost Per Run</Text>
+                            <Text>${COST_PER_RUN}</Text>
+                        </Group>
+                    </Tooltip>
+                </Group>
             </Tabs.List>
 
             <Tabs.Panel value="code" className={editorTab === "code" && "flex"}>

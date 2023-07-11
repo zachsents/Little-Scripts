@@ -1,10 +1,12 @@
 import { modals } from "@mantine/modals"
 import { fire, useScript } from "@web/modules/firebase"
-import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
+import { arrayRemove, collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { SCRIPT_COLLECTION, TRIGGER_COLLECTION } from "shared"
+import { useUser } from "reactfire"
+import { SCRIPT_COLLECTION, TRIGGER_COLLECTION, USER_COLLECTION } from "shared"
+import { removeLocalScript } from "./local-scripts"
 
 
 export function useScriptIdFromRouter() {
@@ -41,18 +43,31 @@ export function useDeleteTrigger(triggerId) {
 export function useDeleteScript() {
 
     const { script } = useScript()
+    const { data: user } = useUser()
 
     const deleteQuery = useQuery({
         queryKey: ["delete-script", script?.id],
         queryFn: async () => {
+            const scriptDocRef = doc(fire.db, SCRIPT_COLLECTION, script?.id)
+
             const triggersSnapshot = await getDocs(query(
                 collection(fire.db, TRIGGER_COLLECTION),
-                where("script", "==", doc(fire.db, SCRIPT_COLLECTION, script?.id))
+                where("script", "==", scriptDocRef)
             ))
 
             const batch = writeBatch(fire.db)
             triggersSnapshot.docs.forEach(doc => batch.delete(doc.ref))
-            batch.delete(doc(fire.db, SCRIPT_COLLECTION, script?.id))
+
+            if (user) {
+                batch.update(doc(fire.db, USER_COLLECTION, user.uid), {
+                    scripts: arrayRemove(scriptDocRef)
+                })
+            }
+            else {
+                removeLocalScript(script?.id)
+            }
+
+            batch.delete(scriptDocRef)
             await batch.commit()
         },
         enabled: false,

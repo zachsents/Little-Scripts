@@ -1,8 +1,8 @@
-import { initializeApp } from "firebase/app"
 import { getAnalytics } from "firebase/analytics"
+import { initializeApp } from "firebase/app"
+import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
-import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth"
 
 
 const firebaseConfig = {
@@ -31,16 +31,8 @@ export const fire = {
     auth,
 }
 
-// Authenticate anonymously if not already authenticated
-onAuthStateChanged(auth, async (user) => {
-    if (user === undefined)
-        return
 
-    if (!user) {
-        await signInAnonymously(auth)
-    }
-})
-
-
-export * from "./use-script"
 export * from "./storage"
+export * from "./use-script"
+export * from "./use-count-query"
+export * from "./update-or-create"
