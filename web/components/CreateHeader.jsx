@@ -20,10 +20,10 @@ export default function CreateHeader() {
                 </Group>
 
                 <Group mr="xl">
-                    <NavLink href="/scripts">
+                    <NavLink href="#">
                         My Scripts
                     </NavLink>
-                    <NavLink href="create">
+                    <NavLink href="/create">
                         Create New Script
                     </NavLink>
                 </Group>

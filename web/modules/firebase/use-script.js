@@ -28,7 +28,7 @@ export function ScriptProvider({ children }) {
 
     useEffect(() => {
         if (scriptId && scriptStatus === "success" && !scriptData)
-            router.replace("/scripts")
+            router.replace("/")
     }, [scriptId, scriptData, scriptStatus])
 
     const [sourceCode] = useStorageFileContent(scriptId && `script-source/${scriptId}.js`)
