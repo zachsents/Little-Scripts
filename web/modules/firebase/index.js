@@ -1,12 +1,12 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
 import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth"
-import { connectFirestoreEmulator, getFirestore } from "firebase/firestore"
+import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDFBwo7vY5CjRVes7I_CnNpXwn4XjWCMPQ",
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: "little-scripts-391918.firebaseapp.com",
     projectId: "little-scripts-391918",
     storageBucket: "little-scripts-391918.appspot.com",
@@ -24,11 +24,11 @@ const storage = getStorage(app)
 const auth = getAuth(app)
 
 
-if (process.env.NODE_ENV == "development" || process.env.NODE_ENV == "test") {
-    // connectFunctionsEmulator(functions, "localhost", functionsEmulatorPort)
-    if (!db._settingsFrozen)
-        connectFirestoreEmulator(db, "localhost", 8080)
-}
+// if (process.env.NODE_ENV == "development" || process.env.NODE_ENV == "test") {
+//     // connectFunctionsEmulator(functions, "localhost", functionsEmulatorPort)
+//     if (!db._settingsFrozen)
+//         connectFirestoreEmulator(db, "localhost", 8080)
+// }
 
 
 onAuthStateChanged(auth, user => {
@@ -49,6 +49,7 @@ export const fire = {
 }
 
 export * from "./storage"
-export * from "./use-script"
-export * from "./use-count-query"
 export * from "./update-or-create"
+export * from "./use-count-query"
+export * from "./use-script"
+

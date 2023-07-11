@@ -38,3 +38,6 @@ yarn-error.log*
 
 # secret files
 **/*.secret.json
+
+# firebase
+.firebase
