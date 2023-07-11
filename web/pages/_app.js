@@ -5,8 +5,10 @@ import "@web/modules/firebase"
 import { fire } from "@web/modules/firebase"
 import { mantineTheme } from "@web/theme"
 import { QueryClient, QueryClientProvider } from "react-query"
-import { AuthProvider, FirebaseAppProvider, FirestoreProvider } from "reactfire"
+import { AuthProvider, FirebaseAppProvider, FirestoreProvider, useUser } from "reactfire"
 import "../styles/globals.css"
+import { useEffect } from "react"
+import { signInAnonymously } from "firebase/auth"
 
 
 const queryClient = new QueryClient()
@@ -25,6 +27,7 @@ export default function MyApp({ Component, pageProps }) {
                                     <Component {...pageProps} />
                                 </div>
                                 <Notifications autoClose={3000} />
+                                <AnonymousLogin />
                             </ModalsProvider>
                         </MantineProvider>
                     </QueryClientProvider>
@@ -35,4 +38,16 @@ export default function MyApp({ Component, pageProps }) {
 }
 
 const modals = {
+}
+
+
+function AnonymousLogin() {
+
+    const { user, status } = useUser()
+
+    useEffect(() => {
+        if (status == "success" && !user) {
+            signInAnonymously(fire.auth)
+        }
+    }, [status])
 }

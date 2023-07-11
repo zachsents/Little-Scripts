@@ -1,6 +1,6 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
-import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth"
+import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
@@ -29,15 +29,6 @@ const auth = getAuth(app)
 //     if (!db._settingsFrozen)
 //         connectFirestoreEmulator(db, "localhost", 8080)
 // }
-
-
-onAuthStateChanged(auth, user => {
-    if (user === undefined)
-        return
-
-    if (!user)
-        signInAnonymously(auth)
-})
 
 
 export const fire = {
