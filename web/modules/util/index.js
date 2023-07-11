@@ -1,12 +1,10 @@
 import { modals } from "@mantine/modals"
 import { fire, useScript } from "@web/modules/firebase"
-import { arrayRemove, collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
+import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { useUser } from "reactfire"
-import { SCRIPT_COLLECTION, TRIGGER_COLLECTION, USER_COLLECTION } from "shared"
-import { removeLocalScript } from "./local-scripts"
+import { SCRIPT_COLLECTION, TRIGGER_COLLECTION } from "shared"
 
 
 export function useScriptIdFromRouter() {
@@ -43,7 +41,6 @@ export function useDeleteTrigger(triggerId) {
 export function useDeleteScript() {
 
     const { script } = useScript()
-    const { data: user } = useUser()
 
     const deleteQuery = useQuery({
         queryKey: ["delete-script", script?.id],
@@ -57,16 +54,6 @@ export function useDeleteScript() {
 
             const batch = writeBatch(fire.db)
             triggersSnapshot.docs.forEach(doc => batch.delete(doc.ref))
-
-            if (user) {
-                batch.update(doc(fire.db, USER_COLLECTION, user.uid), {
-                    scripts: arrayRemove(scriptDocRef)
-                })
-            }
-            else {
-                removeLocalScript(script?.id)
-            }
-
             batch.delete(scriptDocRef)
             await batch.commit()
         },

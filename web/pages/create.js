@@ -1,12 +1,11 @@
 import { Center, Loader, Stack } from "@mantine/core"
 import CreateHeader from "@web/components/CreateHeader"
-import { fire, updateOrCreateDoc } from "@web/modules/firebase"
-import { addLocalScript } from "@web/modules/util/local-scripts"
-import { arrayUnion, doc, serverTimestamp, writeBatch } from "firebase/firestore"
+import { fire } from "@web/modules/firebase"
+import { collection, doc, runTransaction, serverTimestamp } from "firebase/firestore"
 import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { useEffect, useMemo } from "react"
 import { useUser } from "reactfire"
-import { SCRIPT_COLLECTION, USER_COLLECTION } from "shared"
+import { SCRIPT_COLLECTION } from "shared"
 import { adjectives, animals, colors, uniqueNamesGenerator } from "unique-names-generator"
 
 
@@ -20,40 +19,37 @@ const randomName = () => uniqueNamesGenerator({
 export default function CreatePage() {
 
     const router = useRouter()
+    const { data: user, status: userStatus } = useUser()
 
-    const { data: user, status } = useUser()
+    const newScriptRef = useMemo(() => doc(collection(fire.db, SCRIPT_COLLECTION)), [])
 
     const createScript = async () => {
 
-        const newScriptRef = doc(fire.db, SCRIPT_COLLECTION, router.query.id)
+        console.debug("Creating script", newScriptRef.id)
 
-        console.debug("Creating script", newScriptRef.id, "for user", user?.uid ?? "LOCAL")
+        const success = await runTransaction(fire.db, async (t) => {
+            const scriptDoc = await t.get(newScriptRef)
 
-        const batch = writeBatch(fire.db)
-        batch.set(newScriptRef, {
-            name: randomName(),
-            createdAt: serverTimestamp(),
+            if (scriptDoc.exists())
+                return false
+
+            t.set(newScriptRef, {
+                name: randomName(),
+                createdAt: serverTimestamp(),
+                owner: user.uid,
+            })
+
+            return true
         })
 
-        if (user?.uid) {
-            const userDocRef = doc(fire.db, USER_COLLECTION, user?.uid)
-            await updateOrCreateDoc(userDocRef, {
-                scripts: arrayUnion(newScriptRef),
-            }, batch)
-        }
-        else {
-            addLocalScript(newScriptRef.id)
-        }
-
-        await batch.commit()
-
-        router.replace(`/script/${newScriptRef.id}`)
+        if (success)
+            router.replace(`/script/${newScriptRef.id}`)
     }
 
     useEffect(() => {
-        if (status === "success" && router.query.id)
+        if (userStatus === "success" && user)
             createScript()
-    }, [router.query.id, status])
+    }, [newScriptRef, userStatus, user])
 
     return (
         <Stack spacing={0} className="grow">

@@ -1,6 +1,6 @@
 import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
-import { getAuth } from "firebase/auth"
+import { getAuth, onAuthStateChanged, signInAnonymously } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 
@@ -30,6 +30,15 @@ export const fire = {
     storage,
     auth,
 }
+
+
+onAuthStateChanged(auth, user => {
+    if (user === undefined)
+        return
+
+    if (!user)
+        signInAnonymously(auth)
+})
 
 
 export * from "./storage"

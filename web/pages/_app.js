@@ -1,13 +1,12 @@
-import "../styles/globals.css"
-import "@web/modules/firebase"
 import { MantineProvider } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
-import { QueryClient, QueryClientProvider } from "react-query"
 import { Notifications } from "@mantine/notifications"
-import { mantineTheme } from "@web/theme"
-import LoginModal from "@web/components/LoginModal"
-import { AuthProvider, FirebaseAppProvider, FirestoreProvider } from "reactfire"
+import "@web/modules/firebase"
 import { fire } from "@web/modules/firebase"
+import { mantineTheme } from "@web/theme"
+import { QueryClient, QueryClientProvider } from "react-query"
+import { AuthProvider, FirebaseAppProvider, FirestoreProvider } from "reactfire"
+import "../styles/globals.css"
 
 
 const queryClient = new QueryClient()
@@ -36,5 +35,4 @@ export default function MyApp({ Component, pageProps }) {
 }
 
 const modals = {
-    "login": LoginModal,
 }
