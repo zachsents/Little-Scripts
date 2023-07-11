@@ -1,11 +1,10 @@
-import { ActionIcon, Group, Menu, Text } from "@mantine/core"
+import { Group, Text } from "@mantine/core"
 import Link from "next/link"
-import { TbArrowRight, TbDots } from "react-icons/tb"
 
 
-export default function ScriptItem({ icon: Icon, script }) {
+export default function ScriptItem({ icon: Icon, script, onOpen }) {
     return (
-        <Link href={`/script/${script.id}`} className="no-underline" key={script.id}>
+        <Link href={`/script/${script.id}`} className="no-underline" onClick={onOpen} key={script.id}>
             <Group className="hover:bg-gray-50 hover:text-primary cursor-pointer base-border rounded px-lg py-sm text-dark" position="apart">
                 <Group>
                     <Icon />
@@ -19,9 +18,12 @@ export default function ScriptItem({ icon: Icon, script }) {
                     </div>
                 </Group>
 
-                <Menu>
+                {/* <Menu shadow="xs">
                     <Menu.Target>
-                        <ActionIcon className="hover:bg-gray-200" onClick={event => event.stopPropagation()}>
+                        <ActionIcon className="hover:bg-gray-200" onClick={event => {
+                            event.stopPropagation()
+                            event.preventDefault()
+                        }}>
                             <TbDots />
                         </ActionIcon>
                     </Menu.Target>
@@ -30,7 +32,7 @@ export default function ScriptItem({ icon: Icon, script }) {
                             Open
                         </Menu.Item>
                     </Menu.Dropdown>
-                </Menu>
+                </Menu> */}
             </Group>
         </Link>
     )

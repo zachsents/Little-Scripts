@@ -1,6 +1,7 @@
-import { Group, Text } from "@mantine/core"
-import Link from "next/link"
+import { Group } from "@mantine/core"
 import Brand from "./Brand"
+import NavLink from "./NavLink"
+import ScriptListPopover from "./ScriptListPopover"
 
 
 export default function CreateHeader() {
@@ -20,9 +21,11 @@ export default function CreateHeader() {
                 </Group>
 
                 <Group mr="xl">
-                    <NavLink href="#">
-                        My Scripts
-                    </NavLink>
+                    <ScriptListPopover>
+                        <NavLink>
+                            My Scripts
+                        </NavLink>
+                    </ScriptListPopover>
                     <NavLink href="/create">
                         Create New Script
                     </NavLink>
@@ -33,14 +36,3 @@ export default function CreateHeader() {
 }
 
 
-function NavLink({ children, href, ...props }) {
-
-    const textComponent =
-        <Text className="cursor-pointer hover:text-primary-400 transition-colors" color="primary.7"  {...props}>
-            {children}
-        </Text>
-
-    return href ?
-        <Link href={href} className="no-underline">{textComponent}</Link> :
-        textComponent
-}
