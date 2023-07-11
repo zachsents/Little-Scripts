@@ -1,4 +1,8 @@
 [
     "lodash",
-    "puppeteer"
+    "puppeteer",
+    "axios",
+    "node-fetch",
+    "googleapis",
+    "openai"
 ]

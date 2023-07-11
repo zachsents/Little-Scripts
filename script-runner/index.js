@@ -90,7 +90,7 @@ app.post("/", async (req, res) => {
         },
         require: {
             external: ALLOWED_MODULES,
-            builtin: [],
+            builtin: ["*"],
         },
         env: {},
     })
