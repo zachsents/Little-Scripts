@@ -21,7 +21,14 @@
             "firebase.json",
             "**/.*",
             "**/node_modules/**"
-        ]
+        ],
+        "rewrites": [
+            {
+                "regex": "^/script/([^/]+?)(?:/)?$",
+                "destination": "/script/[scriptId].html"
+            }
+        ],
+        "cleanUrls": true
     },
     "storage": {
         "rules": "storage.rules"

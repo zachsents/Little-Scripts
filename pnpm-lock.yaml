@@ -9,7 +9,7 @@ importers:
       eslint-config-custom: workspace:*
       turbo: latest
     devDependencies:
-      '@turbo/gen': 1.10.7_cdeyibytn4o4kkhwd4zjwuq5qe
+      '@turbo/gen': 1.10.7_u2oy6dma5jygnk3njs66bvca7y
       eslint: 8.44.0
       eslint-config-custom: link:eslint-config-custom
       turbo: 1.10.7
@@ -83,6 +83,7 @@ importers:
       '@types/node': ^17.0.12
       '@types/react': ^18.0.22
       '@types/react-dom': ^18.0.7
+      '@zachsents/next-firebase-rewrites': ^1.1.1
       autoprefixer: ^10.4.14
       classnames: ^2.3.2
       dayjs: ^1.11.9
@@ -110,6 +111,7 @@ importers:
       '@mantine/modals': 6.0.16_uu56mwkfrreagak2ehv7jpizdy
       '@mantine/notifications': 6.0.16_uu56mwkfrreagak2ehv7jpizdy
       '@monaco-editor/react': 4.5.1_zwszyzws36eupxxmzxlyrhs4aq
+      '@zachsents/next-firebase-rewrites': 1.1.1
       classnames: 2.3.2
       dayjs: 1.11.9
       firebase: 9.23.0
@@ -2031,7 +2033,7 @@ packages:
     resolution: {integrity: sha512-vxhUy4J8lyeyinH7Azl1pdd43GJhZH/tP2weN8TntQblOY+A0XbT8DJk1/oCPuOOyg/Ja757rG0CgHcWC8OfMA==}
     dev: true
 
-  /@turbo/gen/1.10.7_cdeyibytn4o4kkhwd4zjwuq5qe:
+  /@turbo/gen/1.10.7_u2oy6dma5jygnk3njs66bvca7y:
     resolution: {integrity: sha512-yQB/A+J17Ze3oewdaJqQ9jcFLzBNU3D/QIZeYU2GBeJk/NiXh2eKfeuu33U/MduOajRVfXl82r8j7It6glVowQ==}
     hasBin: true
     dependencies:
@@ -2042,7 +2044,7 @@ packages:
       minimatch: 9.0.3
       node-plop: 0.26.3
       semver: 7.5.4
-      ts-node: 10.9.1_cdeyibytn4o4kkhwd4zjwuq5qe
+      ts-node: 10.9.1_u2oy6dma5jygnk3njs66bvca7y
       update-check: 1.5.4
       validate-npm-package-name: 5.0.0
     transitivePeerDependencies:
@@ -2365,6 +2367,13 @@ packages:
     resolution: {integrity: sha512-1IjoTr2Wnltruo0MBSguBSlq8IAFNHds56hIxv7gOVhAEE4VH1yrqFyNJVy8iwR05uaso5E4pThwZofIlO7few==}
     hasBin: true
     dev: true
+
+  /@zachsents/next-firebase-rewrites/1.1.1:
+    resolution: {integrity: sha512-Jw77hVjF+/4B/bHEMq8ZnnA3gINRCSFDrDHsAWWEFDVKCIUmzDg+eobsCgwwsffoF0PkwgPU3XYtqqeERQzOew==}
+    hasBin: true
+    dependencies:
+      yargs: 17.7.2
+    dev: false
 
   /abort-controller/3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -7836,7 +7845,7 @@ packages:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
     dev: true
 
-  /ts-node/10.9.1_cdeyibytn4o4kkhwd4zjwuq5qe:
+  /ts-node/10.9.1_u2oy6dma5jygnk3njs66bvca7y:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -7862,7 +7871,7 @@ packages:
       create-require: 1.1.1
       diff: 4.0.2
       make-error: 1.3.6
-      typescript: 4.9.5
+      typescript: 5.1.6
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     dev: true
@@ -8002,6 +8011,13 @@ packages:
     resolution: {integrity: sha512-1FXk9E2Hm+QzZQ7z+McJiHL4NW1F2EzMu9Nq9i3zAaGqibafqYwCVU6WyWAuyQRRzOlxou8xZSyXLEN8oKj24g==}
     engines: {node: '>=4.2.0'}
     hasBin: true
+    dev: false
+
+  /typescript/5.1.6:
+    resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
 
   /uc.micro/1.0.6:
     resolution: {integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==}
