@@ -54,6 +54,9 @@ app.post("/", async (req, res) => {
     const result = await new Promise(resolve => {
         exec("node .", {
             cwd: path.dirname(USER_SCRIPT_PATH),
+            uid: 1000,
+            gid: 1000,
+            env: {},
         }, (error, stdout, stderr) => {
             resolve({ error, stdout, stderr })
         })
