@@ -1,5 +1,6 @@
 import "dotenv/config"
 import express from "express"
+import morgan from "morgan"
 import { applicationDefault, initializeApp } from "firebase-admin/app"
 import { getStorage } from "firebase-admin/storage"
 import { getFirestore, FieldValue } from "firebase-admin/firestore"
@@ -34,6 +35,7 @@ const storage = getStorage()
 // Express setup
 const app = express()
 app.use(express.json())
+app.use(morgan("short"))
 
 
 /**
