@@ -1,12 +1,24 @@
-import { Button, Group, Tabs, Text, Tooltip } from "@mantine/core"
+import { Button, Center, Group, Stack, Table, Tabs, Text, Tooltip } from "@mantine/core"
 import { modals } from "@mantine/modals"
+import { Prism } from "@mantine/prism"
 import MonacoEditor from "@monaco-editor/react"
 import { useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useEffect, useState } from "react"
-import { TbCodeDots, TbRun } from "react-icons/tb"
+import { TbBrandNpm, TbCodeDots, TbPackages, TbRun } from "react-icons/tb"
 import { COST_PER_RUN, SOURCE_FILE_PATH } from "shared"
 import LogsSection from "./LogsSection"
+import BetterScroll from "./BetterScroll"
+
+
+const dependencies = {
+    "axios": "^1.4.0",
+    "googleapis": "^121.0.0",
+    "lodash": "^4.17.21",
+    "node-fetch": "^3.3.1",
+    "openai": "^3.3.0",
+    "puppeteer": "^20.8.1"
+}
 
 
 export default function CodeSection() {
@@ -58,6 +70,7 @@ export default function CodeSection() {
                 <Group spacing={0}>
                     <Tabs.Tab value="code" icon={<TbCodeDots />}>Code</Tabs.Tab>
                     <Tabs.Tab value="logs" icon={<TbRun />}>Runs</Tabs.Tab>
+                    <Tabs.Tab value="dependencies" icon={<TbPackages />}>Dependencies</Tabs.Tab>
                 </Group>
 
                 <Group spacing="xl">
@@ -113,6 +126,59 @@ export default function CodeSection() {
                 <LogsSection />
             </Tabs.Panel>
 
+            <Tabs.Panel value="dependencies" className={editorTab === "dependencies" && "flex"}>
+                <BetterScroll>
+                    <Group p="xl" spacing="xl" align="flex-start">
+                        <Table className="flex-1">
+                            <thead>
+                                <tr>
+                                    <th>Package Name</th>
+                                    <th>Version</th>
+                                    <th>View on NPM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Object.entries(dependencies).map(([name, version]) => {
+
+                                    const exactVersion = version.match(/[\d.]+/)?.[0]
+
+                                    return (
+                                        <tr key={name}>
+                                            <td>{name}</td>
+                                            <td className="font-mono">{version}</td>
+                                            <td className="flex">
+                                                <a
+                                                    className="group text-red text-3xl hover:scale-125 transition-transform"
+                                                    href={`https://npmjs.com/package/${name}${exactVersion ? `/v/${exactVersion}` : ""}`}
+                                                    target="_blank" rel="noreferrer"
+                                                >
+                                                    <Center px="xl">
+                                                        <TbBrandNpm className="stroke-[1.5] group-hover:fill-red-100 transition-colors" />
+                                                    </Center>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    )
+                                })}
+                            </tbody>
+                        </Table>
+
+                        <Stack w="35%">
+                            <Text>
+                                These are the dependencies that are available to your script. You can use them by importing them in your code:
+                            </Text>
+                            <div >
+                                <Prism language="javascript">
+                                    {`import puppeteer from "puppeteer"\nimport axios from "axios"`}
+                                </Prism>
+                            </div>
+                            <Text size="sm" color="dimmed">
+                                In the future, you will be able to add your own dependencies!
+                            </Text>
+                        </Stack>
+                    </Group>
+                </BetterScroll>
+            </Tabs.Panel>
         </Tabs>
     )
 }
