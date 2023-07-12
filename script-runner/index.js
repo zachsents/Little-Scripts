@@ -8,6 +8,7 @@ import path from "path"
 import { fileURLToPath } from "url"
 import util from "util"
 import { NodeVM } from "vm2"
+import { FirestoreDataConverter } from "@zachsents/firestore-data-converter"
 
 
 // Constants
@@ -137,7 +138,9 @@ _wrapper((async function() {
         returnValue,
     }
 
-    await db.collection("script-runs").doc(messageContent.scriptRunId).set(documentUpdate, { merge: true })
+    await db.collection("script-runs").doc(messageContent.scriptRunId)
+        .withConverter(new FirestoreDataConverter())
+        .set(documentUpdate, { merge: true })
 
     res.status(204).send()
 })

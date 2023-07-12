@@ -45,24 +45,26 @@ importers:
 
   script-runner:
     specifiers:
+      '@zachsents/firestore-data-converter': ^1.0.1
       axios: ^1.4.0
       dotenv: ^16.3.1
       express: ^4.18.2
       firebase-admin: ^11.8.0
       googleapis: ^121.0.0
       lodash: ^4.17.21
-      node-fetch: ^3.3.1
+      node-fetch: ^2.6.12
       openai: ^3.3.0
       puppeteer: ^20.8.0
       vm2: ^3.9.19
     dependencies:
+      '@zachsents/firestore-data-converter': 1.0.1
       axios: 1.4.0
       dotenv: 16.3.1
       express: 4.18.2
       firebase-admin: 11.9.0
       googleapis: 121.0.0
       lodash: 4.17.21
-      node-fetch: 3.3.1
+      node-fetch: 2.6.12
       openai: 3.3.0
       puppeteer: 20.8.0
       vm2: 3.9.19
@@ -2368,6 +2370,10 @@ packages:
     hasBin: true
     dev: true
 
+  /@zachsents/firestore-data-converter/1.0.1:
+    resolution: {integrity: sha512-sjs+WQReN+8OT3jQMKY5Joc6bYF76+RY3N6FmfnKvKMkFAMDzIlLYVivTngLzEnYy4TOwPmXn7NFSdbTSZoclQ==}
+    dev: false
+
   /@zachsents/next-firebase-rewrites/1.1.1:
     resolution: {integrity: sha512-Jw77hVjF+/4B/bHEMq8ZnnA3gINRCSFDrDHsAWWEFDVKCIUmzDg+eobsCgwwsffoF0PkwgPU3XYtqqeERQzOew==}
     hasBin: true
@@ -3205,11 +3211,6 @@ packages:
 
   /damerau-levenshtein/1.0.8:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
-    dev: false
-
-  /data-uri-to-buffer/4.0.1:
-    resolution: {integrity: sha512-0R9ikRb668HB7QDxT1vkpuUBtqc53YyAwMwGeUFKRojY/NWKvdZ+9UYtRfGmhqNbRkTSVpMbmyhXipFFv2cb/A==}
-    engines: {node: '>= 12'}
     dev: false
 
   /data-uri-to-buffer/5.0.1:
@@ -4144,14 +4145,6 @@ packages:
       pend: 1.2.0
     dev: false
 
-  /fetch-blob/3.2.0:
-    resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
-    engines: {node: ^12.20 || >= 14.13}
-    dependencies:
-      node-domexception: 1.0.0
-      web-streams-polyfill: 3.2.1
-    dev: false
-
   /figures/3.2.0:
     resolution: {integrity: sha512-yaduQFRKLXYOGgEn6AZau90j3ggSOyiqXU0F9JZfeXYhNa+Jk4X+s45A2zg5jns87GAFa34BBm2kXw4XpNcbdg==}
     engines: {node: '>=8'}
@@ -4323,13 +4316,6 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    dev: false
-
-  /formdata-polyfill/4.0.10:
-    resolution: {integrity: sha512-buewHzMvYL29jdeQTVILecSaZKnt/RJWjoZCF5OW60Z67/GmSLBkOFM7qh1PI3zFNtJbaZL5eQu1vLfazOwj4g==}
-    engines: {node: '>=12.20.0'}
-    dependencies:
-      fetch-blob: 3.2.0
     dev: false
 
   /forwarded/0.2.0:
@@ -6272,11 +6258,6 @@ packages:
       lower-case: 1.1.4
     dev: true
 
-  /node-domexception/1.0.0:
-    resolution: {integrity: sha512-/jKZoMpw0F8GRwl4/eLROPA3cfcXtLApP0QzLmUT/HuPCZWyB7IY9ZrMeKw2O/nFIqPQB3PVM9aYm0F312AXDQ==}
-    engines: {node: '>=10.5.0'}
-    dev: false
-
   /node-fetch/2.6.12:
     resolution: {integrity: sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==}
     engines: {node: 4.x || >=6.0.0}
@@ -6298,15 +6279,6 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
-    dev: false
-
-  /node-fetch/3.3.1:
-    resolution: {integrity: sha512-cRVc/kyto/7E5shrWca1Wsea4y6tL9iYJE5FBCius3JQfb/4P4I295PfhgbJQBLTx6lATE4z+wK0rPM4VS2uow==}
-    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
-    dependencies:
-      data-uri-to-buffer: 4.0.1
-      fetch-blob: 3.2.0
-      formdata-polyfill: 4.0.10
     dev: false
 
   /node-forge/1.3.1:
@@ -8249,11 +8221,6 @@ packages:
     dependencies:
       defaults: 1.0.4
     dev: true
-
-  /web-streams-polyfill/3.2.1:
-    resolution: {integrity: sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==}
-    engines: {node: '>= 8'}
-    dev: false
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
