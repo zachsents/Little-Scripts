@@ -3,7 +3,7 @@ import { createContext, useContext } from "react"
 import { useFirestoreCollectionData, useFirestoreDocData } from "reactfire"
 import { fire, useStorageFileContent } from "."
 import { useScriptIdFromRouter } from "../util"
-import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, getLastBillingCycleStartDate } from "shared"
+import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SOURCE_FILE_PATH, TRIGGER_COLLECTION, getLastBillingCycleStartDate } from "shared"
 import { useFirestoreCount } from "./use-count-query"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
@@ -31,7 +31,7 @@ export function ScriptProvider({ children }) {
             router.replace("/")
     }, [scriptId, scriptData, scriptStatus])
 
-    const [sourceCode] = useStorageFileContent(scriptId && `script-source/${scriptId}.js`)
+    const [sourceCode] = useStorageFileContent(scriptId && SOURCE_FILE_PATH(scriptId))
 
     const { data: triggers, status: triggersStatus } = useFirestoreCollectionData(query(
         collection(fire.db, TRIGGER_COLLECTION),

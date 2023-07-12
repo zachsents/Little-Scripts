@@ -5,7 +5,7 @@ import { useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useEffect, useState } from "react"
 import { TbCodeDots, TbRun } from "react-icons/tb"
-import { COST_PER_RUN } from "shared"
+import { COST_PER_RUN, SOURCE_FILE_PATH } from "shared"
 import LogsSection from "./LogsSection"
 
 
@@ -23,7 +23,7 @@ export default function CodeSection() {
     const isCodeDirty = useMainStore(s => s.isCodeDirty)
     const setCodeDirty = useMainStore(s => s.setCodeDirty)
 
-    const [_save, saveQuery] = useSetStorageFileContent(`script-source/${script?.id}.js`, workingCode)
+    const [_save, saveQuery] = useSetStorageFileContent(SOURCE_FILE_PATH(script?.id), workingCode)
 
     const save = async () => {
         await _save()
@@ -48,7 +48,7 @@ export default function CodeSection() {
     return (
         <Tabs
             value={editorTab} onTabChange={setEditorTab}
-            className="flex-1 flex flex-col"
+            className="h-full flex flex-col"
             classNames={{
                 tabsList: "justify-between",
                 panel: "flex-1 flex-col",

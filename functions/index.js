@@ -3,10 +3,11 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore"
 import { onDocumentWritten } from "firebase-functions/v2/firestore"
 import { onTaskDispatched } from "firebase-functions/v2/tasks"
 
-import { db, functions, pubsub } from "./init.js"
+import { db, functions, pubsub, storage } from "./init.js"
 import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
-import { MAX_FREE_RUNS, RUN_STATUS, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
+import { LOG_FILE_PATH, MAX_FREE_RUNS, RUN_STATUS, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import { countExistingRuns } from "./queries.js"
+import { onMessagePublished } from "firebase-functions/v2/pubsub"
 
 
 /**
@@ -59,7 +60,6 @@ export const onScriptRunWritten = onDocumentWritten(`${SCRIPT_RUN_COLLECTION}/{s
             return
         }
 
-
         logger.info(`Beginning script run (${event.data.after.id})`)
 
         await db.collection(SCRIPT_RUN_COLLECTION).doc(event.data.after.id).update({
@@ -67,11 +67,25 @@ export const onScriptRunWritten = onDocumentWritten(`${SCRIPT_RUN_COLLECTION}/{s
             startedAt: FieldValue.serverTimestamp(),
         })
 
+        const [sourceDownloadUrl] = await storage.bucket().file(SOURCE_FILE_PATH(scriptRun.script.id)).getSignedUrl({
+            version: "v4",
+            action: "read",
+            expires: Date.now() + SIGNED_URL_EXPIRATION,
+        })
+
+        const [logUploadUrl] = await storage.bucket().file(LOG_FILE_PATH(scriptRun.script.id, event.data.after.id)).getSignedUrl({
+            version: "v4",
+            action: "write",
+            expires: Date.now() + SIGNED_URL_EXPIRATION,
+            contentType: "text/plain",
+        })
+
         await pubsub.topic("run-script").publishMessage({
-            data: Buffer.from(JSON.stringify({
+            json: {
                 scriptRunId: event.data.after.id,
-                scriptId: scriptRun.script.id,
-            }))
+                sourceDownloadUrl,
+                logUploadUrl,
+            }
         })
     }
 
@@ -160,5 +174,37 @@ export const onTriggerWrite = onDocumentWritten(`${TRIGGER_COLLECTION}/{triggerI
                 ),
             })
         }
+    }
+})
+
+
+export const onScriptRunFinished = onMessagePublished("finish-script-run", async event => {
+
+    const { scriptRunId, status, ...data } = event.data.message.json
+    const scriptRunRef = db.collection(SCRIPT_RUN_COLLECTION).doc(scriptRunId)
+
+    if (status === RUN_STATUS.COMPLETED) {
+        logger.info(`Script run completed (${event.data.message.json.scriptRunId})`)
+
+        await scriptRunRef.update({
+            status: RUN_STATUS.COMPLETED,
+            completedAt: FieldValue.serverTimestamp(),
+            ...data,
+        })
+
+        return
+    }
+
+    if (status === RUN_STATUS.FAILED) {
+        logger.info(`Script run failed (${event.data.message.json.scriptRunId})`)
+
+        await scriptRunRef.update({
+            status: RUN_STATUS.FAILED,
+            failedAt: FieldValue.serverTimestamp(),
+            failureReason: "Runtime error",
+            ...data,
+        })
+
+        return
     }
 })

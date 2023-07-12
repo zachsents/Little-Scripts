@@ -1,8 +1,8 @@
 import { Center, Group, Loader, Select, Tabs, Text } from "@mantine/core"
 import { useScript, useStorageFileContent } from "@web/modules/firebase"
 import { useEffect, useState } from "react"
-import { TbAlertCircle, TbArrowForward, TbFileText } from "react-icons/tb"
-import { RUN_STATUS } from "shared"
+import { TbAlertCircle, TbFileText } from "react-icons/tb"
+import { LOG_FILE_PATH, RUN_STATUS } from "shared"
 import BetterScroll from "./BetterScroll"
 
 
@@ -26,9 +26,8 @@ export default function LogsSection() {
         console.debug("Selected run:", selectedRunId)
     }, [selectedRunId])
 
-    const [logs, logsQuery] = useStorageFileContent(selectedRun && `script-run-logs/${selectedRunId}.log`)
+    const [logs, logsQuery] = useStorageFileContent(selectedRun && LOG_FILE_PATH(script.id, selectedRunId))
 
-    const hasReturnValue = selectedRun?.returnValue !== undefined
     const hasFailed = selectedRun?.status === RUN_STATUS.FAILED
 
     return (
@@ -47,12 +46,12 @@ export default function LogsSection() {
                             Logs
                         </Tabs.Tab>
 
-                        <Tabs.Tab
+                        {/* <Tabs.Tab
                             value="return" icon={<TbArrowForward />}
                             className={!hasReturnValue && "text-gray"}
                         >
                             Return Value
-                        </Tabs.Tab>
+                        </Tabs.Tab> */}
 
                         <Tabs.Tab
                             value="errors" icon={<TbAlertCircle />}
@@ -80,14 +79,14 @@ export default function LogsSection() {
                         <>
                             <Tabs.Panel value="logs">
                                 <BetterScroll>
-                                    <pre className="text-sm">
+                                    <pre className="text-sm whitespace-pre-wrap">
                                         {logs}
                                     </pre>
                                     <Text size="xs" color="dimmed" align="center">End of logs</Text>
                                 </BetterScroll>
                             </Tabs.Panel>
 
-                            <Tabs.Panel value="return">
+                            {/* <Tabs.Panel value="return">
                                 <BetterScroll>
                                     {hasReturnValue ?
                                         <pre>
@@ -95,17 +94,17 @@ export default function LogsSection() {
                                         </pre> :
                                         <Text size="sm" color="dimmed" align="center" py="lg">No return value</Text>}
                                 </BetterScroll>
-                            </Tabs.Panel>
+                            </Tabs.Panel> */}
 
                             <Tabs.Panel value="errors">
                                 <BetterScroll>
                                     {hasFailed ?
                                         <div>
                                             <p className="font-bold font-mono text-red-800 bg-gray-100 px-md py-xxs rounded">{selectedRun?.failureReason}</p>
-                                            {selectedRun?.runtimeError?.stack &&
-                                                <pre className="text-sm text-red-800">
-                                                    {selectedRun.runtimeError.stack}
-                                                </pre>}
+
+                                            <pre className="text-sm text-red-800 whitespace-pre-wrap">
+                                                {selectedRun.stderr}
+                                            </pre>
                                         </div> :
                                         <Text size="sm" color="dimmed" align="center" py="lg">No errors</Text>}
                                 </BetterScroll>

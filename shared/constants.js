@@ -22,6 +22,11 @@ export const SCRIPT_COLLECTION = "scripts"
 export const USER_COLLECTION = "users"
 
 
+export const SOURCE_FILE_PATH = scriptId => `${scriptId}/source.js`
+export const LOG_FILE_PATH = (scriptId, scriptRunId) => `${scriptId}/runs/${scriptRunId}/log.txt`
+
+export const SIGNED_URL_EXPIRATION = 15 * 60 * 1000 // 15 minutes
+
 export const MAX_FREE_RUNS = 100
 export const COST_PER_RUN = 0.01
 

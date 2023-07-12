@@ -32,9 +32,11 @@ function ScriptPageContent() {
     if (!isClient) return null
 
     return isLoaded ?
-        <Group className="grow px-md pb-md" spacing="xs" align="stretch">
+        <Group noWrap className="grow px-md pb-md" spacing="xs" align="stretch">
             <ConfigSection />
-            <CodeSection />
+            <div className="flex-1">
+                <CodeSection />
+            </div>
         </Group> :
         <Center className="grow">
             <Loader />

@@ -1,7 +1,11 @@
 FROM node:19-alpine
 
-WORKDIR /little-script
-COPY . .
+WORKDIR /user-script
+COPY ./user-script .
+RUN npm install
+
+WORKDIR /server
+COPY ./server .
 RUN npm install
 
 EXPOSE 5050
