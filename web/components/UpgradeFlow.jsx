@@ -54,6 +54,9 @@ export default function UpgradeFlow({ initialStep }) {
                             <List.Item>
                                 Unlimited runs for <span className="text-primary-700 font-bold">$0.01</span> each
                             </List.Item>
+                            <List.Item>
+                                Flat monthly charge of <span className="text-primary-700 font-bold">$1.00</span>
+                            </List.Item>
                         </List>
                     </div>
 
