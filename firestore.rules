@@ -42,6 +42,33 @@ service cloud.firestore {
             allow create: if ownsAttachedScript(request.resource);
         }
 
+        // Stripe
+        match /stripe-customers/{uid} {
+            allow read: if request.auth.uid == uid;
+
+            match /checkout_sessions/{id} {
+                allow read, write: if request.auth.uid == uid;
+            }
+            match /subscriptions/{id} {
+                allow read: if request.auth.uid == uid;
+            }
+            match /payments/{id} {
+                allow read: if request.auth.uid == uid;
+            }
+        }
+
+        match /stripe-products/{id} {
+            allow read: if true;
+
+            match /prices/{id} {
+                allow read: if true;
+            }
+
+            match /tax_rates/{id} {
+                allow read: if true;
+            }
+        }
+
         // Fallback to denying all other access
         match /{document=**} {
             allow read, write: if false;
