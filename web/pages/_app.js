@@ -9,6 +9,7 @@ import { AuthProvider, FirebaseAppProvider, FirestoreProvider, useUser } from "r
 import "../styles/globals.css"
 import { useEffect } from "react"
 import { signInAnonymously } from "firebase/auth"
+import UpgradeModal from "@web/components/UpgradeModal"
 
 
 const queryClient = new QueryClient()
@@ -38,6 +39,7 @@ export default function MyApp({ Component, pageProps }) {
 }
 
 const modals = {
+    "upgrade": UpgradeModal,
 }
 
 

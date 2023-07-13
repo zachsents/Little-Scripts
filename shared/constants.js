@@ -16,10 +16,16 @@ export const TRIGGER_TYPE = {
 }
 
 
+export const BASE_URL = process.env.NODE_ENV === "production" ? "https://littlescript.io" : "http://localhost:3000"
+
+
 export const SCRIPT_RUN_COLLECTION = "script-runs"
 export const TRIGGER_COLLECTION = "triggers"
 export const SCRIPT_COLLECTION = "scripts"
 export const USER_COLLECTION = "users"
+
+export const STRIPE_CUSTOMERS_COLLECTION = "stripe-customers"
+export const STRIPE_PRODUCTS_COLLECTION = "stripe-products"
 
 
 export const SOURCE_FILE_PATH = scriptId => `scripts/${scriptId}/source.js`

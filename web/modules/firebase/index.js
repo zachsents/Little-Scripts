@@ -2,6 +2,7 @@ import { getAnalytics } from "firebase/analytics"
 import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
+import { getFunctions } from "firebase/functions"
 import { getStorage } from "firebase/storage"
 
 
@@ -22,6 +23,7 @@ const analytics = global.window && getAnalytics(app)
 const db = getFirestore(app)
 const storage = getStorage(app)
 const auth = getAuth(app)
+const functions = getFunctions(app)
 
 
 // if (process.env.NODE_ENV == "development" || process.env.NODE_ENV == "test") {
@@ -37,6 +39,7 @@ export const fire = {
     db,
     storage,
     auth,
+    functions,
 }
 
 export * from "./storage"
