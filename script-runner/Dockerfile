@@ -2,7 +2,7 @@ FROM node:18-slim
 
 # required for Puppeteer
 RUN apt update
-RUN apt install -y libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2
+RUN apt install -y libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 xvfb
 
 WORKDIR /user-script
 COPY ./user-script .

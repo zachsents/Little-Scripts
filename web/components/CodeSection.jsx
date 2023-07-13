@@ -17,7 +17,8 @@ const dependencies = {
     "lodash": "^4.17.21",
     "node-fetch": "^3.3.1",
     "openai": "^3.3.0",
-    "puppeteer": "^20.8.1"
+    "puppeteer": "^20.8.1",
+    "xvfb": "^0.4.0"
 }
 
 
