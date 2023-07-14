@@ -188,7 +188,7 @@ function UsageSection() {
                         >
                             <tr>
                                 <td className="font-bold">Balance</td>
-                                <td className="text-end text-orange font-bold">${billableRuns * COST_PER_RUN}</td>
+                                <td className="text-end text-orange font-bold">${(billableRuns * COST_PER_RUN).toFixed(2)}</td>
                             </tr>
                         </Tooltip>
                     </tbody>
