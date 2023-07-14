@@ -43,10 +43,10 @@ export function useSubscription() {
 
 export function usePaymentMethods() {
 
-    const { status } = useUser()
+    const { data: user, status } = useUser()
 
     const pmQuery = useQuery({
-        queryKey: ["get-payment-methods"],
+        queryKey: ["get-payment-methods", user?.uid],
         queryFn: () => httpsCallable(fire.functions, "onRequestPaymentMethods")(),
         enabled: status === "success",
     })
@@ -61,7 +61,7 @@ export function useScriptUsage() {
     const { status } = useUser()
 
     const usageQuery = useQuery({
-        queryKey: ["get-script-usage"],
+        queryKey: ["get-script-usage", scriptId],
         queryFn: () => httpsCallable(fire.functions, "onRequestScriptUsage")({
             scriptId,
         }),
