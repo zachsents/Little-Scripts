@@ -1,16 +1,16 @@
-import { ActionIcon, Group, Menu, Stack, Tabs, Text, Title, Tooltip } from "@mantine/core"
+import { ActionIcon, Center, Group, Loader, Menu, Modal, Stack, Tabs, Text, Title, Tooltip } from "@mantine/core"
 import { useScript } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useSelectedTrigger } from "@web/modules/triggers"
 import { useDeleteScript } from "@web/modules/util"
+import { updateDoc } from "firebase/firestore"
+import { useState } from "react"
 import { TbChartLine, TbDots, TbPencil, TbReportMoney, TbRun, TbTrash } from "react-icons/tb"
-import BillingConfig from "./BillingConfig"
 import ConfigPanel from "./ConfigPanel"
+import EditableText from "./EditableText"
 import SelectedTriggerConfig from "./SelectedTriggerConfig"
 import TriggersConfig from "./TriggersConfig"
-import { useState } from "react"
-import EditableText from "./EditableText"
-import { updateDoc } from "firebase/firestore"
+import BillingConfig from "./BillingConfig"
 
 
 const ICON_SIZE = "1.5rem"
@@ -33,7 +33,7 @@ export default function ConfigSection() {
         setIsRenamingTitle(false)
     }
 
-    return (
+    return <>
         <Stack w="22rem" miw="22rem">
             <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart" noWrap>
                 {isRenamingTitle ?
@@ -100,7 +100,13 @@ export default function ConfigSection() {
                 </Tabs.Panel>
             </Tabs>
         </Stack>
-    )
+
+        <Modal opened={deleteQuery.isFetching} onClose={() => { }} withinPortal centered withCloseButton={false} size="xs">
+            <Center py="xl">
+                <Loader />
+            </Center>
+        </Modal>
+    </>
 }
 
 

@@ -1,13 +1,15 @@
-import logger from "firebase-functions/logger"
 import { FieldValue, Timestamp } from "firebase-admin/firestore"
+import logger from "firebase-functions/logger"
 import { onDocumentWritten } from "firebase-functions/v2/firestore"
 import { onTaskDispatched } from "firebase-functions/v2/tasks"
 
-import { db, functions, pubsub, storage } from "./init.js"
-import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
-import { LOG_FILE_PATH, MAX_FREE_RUNS, RUN_STATUS, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
-import { countExistingRuns } from "./queries.js"
+import { HttpsError, onCall } from "firebase-functions/v2/https"
 import { onMessagePublished } from "firebase-functions/v2/pubsub"
+import { LOG_FILE_PATH, MAX_FREE_RUNS, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
+import { Stripe } from "stripe"
+import { db, functions, pubsub, storage, stripeKey } from "./init.js"
+import { getStripeCustomerId, getSubscriptionForScript, getUsageForScript } from "./stripe.js"
+import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
 
 
 /**
@@ -36,7 +38,10 @@ import { onMessagePublished } from "firebase-functions/v2/pubsub"
  */
 
 
-export const onScriptRunWritten = onDocumentWritten(`${SCRIPT_RUN_COLLECTION}/{scriptRunId}`, async event => {
+export const onScriptRunWritten = onDocumentWritten({
+    document: `${SCRIPT_RUN_COLLECTION}/{scriptRunId}`,
+    secrets: [stripeKey],
+}, async event => {
 
     if (!event.data.after.exists)
         return
@@ -46,19 +51,31 @@ export const onScriptRunWritten = onDocumentWritten(`${SCRIPT_RUN_COLLECTION}/{s
 
     if (scriptRun.status === RUN_STATUS.PENDING) {
 
-        // TO DO: only do this if the script is on the free tier
-        const existingRunsCount = await countExistingRuns(scriptRun.script)
-        if (existingRunsCount >= MAX_FREE_RUNS) {
-            logger.info(`Free tier run limit reached (${event.data.after.id})`)
+        const stripe = new Stripe(stripeKey.value())
+        const subscription = await getSubscriptionForScript(stripe, scriptRun.script.id)
+        const isOnFreePlan = subscription.items.data[0].price.id === STRIPE_FREE_PRICE_ID
 
-            await db.collection(SCRIPT_RUN_COLLECTION).doc(event.data.after.id).update({
-                status: RUN_STATUS.FAILED,
-                failedAt: FieldValue.serverTimestamp(),
-                failureReason: "Free tier run limit reached",
-            })
+        if (isOnFreePlan) {
+            const usage = await getUsageForScript(stripe, scriptRun.script.id)
 
-            return
+            if (usage.total_usage >= MAX_FREE_RUNS) {
+                logger.info(`Free tier run limit reached (${event.data.after.id})`)
+
+                await db.collection(SCRIPT_RUN_COLLECTION).doc(event.data.after.id)
+                    .update({
+                        status: RUN_STATUS.FAILED,
+                        failedAt: FieldValue.serverTimestamp(),
+                        failureReason: "Free tier run limit reached",
+                    })
+
+                return
+            }
         }
+
+        await stripe.subscriptionItems.createUsageRecord(
+            subscription.items.data[0].id,
+            { quantity: 1 }
+        )
 
         logger.info(`Beginning script run (${event.data.after.id})`)
 
@@ -210,4 +227,73 @@ export const onScriptRunFinished = onMessagePublished("finish-script-run", async
 })
 
 
+export const onRequestCreateScript = onCall({
+    secrets: [stripeKey],
+}, async (req) => {
+
+    if (!req.auth?.uid)
+        throw new HttpsError("unauthenticated", "You must be signed in to create a script")
+
+    const scriptDocRef = db.collection(SCRIPT_COLLECTION).doc()
+
+    const stripe = new Stripe(stripeKey.value())
+    const customerId = await getStripeCustomerId(req)
+    const subscription = await stripe.subscriptions.create({
+        customer: customerId,
+        items: [
+            { price: STRIPE_FREE_PRICE_ID },
+        ],
+        collection_method: "charge_automatically",
+        metadata: {
+            scriptId: scriptDocRef.id,
+        },
+    })
+
+    await scriptDocRef.set({
+        name: req.data.name,
+        createdAt: FieldValue.serverTimestamp(),
+        owner: req.auth.uid,
+    })
+
+    return {
+        scriptId: scriptDocRef.id,
+        subscriptionId: subscription.id,
+    }
+})
+
+
+export const onRequestDeleteScript = onCall({
+    secrets: [stripeKey],
+}, async (req) => {
+
+    if (!(await ownsScript(req.auth.uid, req.data.scriptId)))
+        throw new HttpsError("permission-denied", "You do not own this script")
+
+    const stripe = new Stripe(stripeKey.value())
+
+    const subscriptionId = await getSubscriptionForScript(stripe, req.data.scriptId, false)
+    await stripe.subscriptions.cancel(subscriptionId, {
+        invoice_now: true,
+    })
+
+    const scriptRef = db.collection(SCRIPT_COLLECTION).doc(req.data.scriptId)
+
+    const triggerDocs = await db.collection(TRIGGER_COLLECTION)
+        .where("script", "==", scriptRef)
+        .get()
+        .then(snapshot => snapshot.docs)
+
+    const batch = db.batch()
+    triggerDocs.forEach(doc => batch.delete(doc.ref))
+    batch.delete(scriptRef)
+    await batch.commit()
+})
+
+
 export * from "./stripe.js"
+
+
+export function ownsScript(uid, scriptId) {
+    return db.collection(SCRIPT_COLLECTION).doc(scriptId).get()
+        .then(doc => doc.data()?.owner === uid)
+}

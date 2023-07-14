@@ -1,81 +1,72 @@
+import { collection, query, where } from "firebase/firestore"
 import { httpsCallable } from "firebase/functions"
 import { useQuery } from "react-query"
+import { useFirestoreCollectionData, useUser } from "reactfire"
+import { STRIPE_CUSTOMERS_COLLECTION } from "shared"
 import { fire } from "../firebase"
 import { useScriptIdFromRouter } from "../util"
 
 
-export function useBillingPortalUrl() {
-
-    const scriptId = useScriptIdFromRouter()
-
-    const query = useQuery({
-        queryKey: ["billing-portal-url", scriptId],
-        queryFn: () => httpsCallable(fire.functions, "onRequestStripeCustomerPortalSession")({ scriptId }),
-        enabled: !!scriptId,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-    })
-
-    return [query?.data?.data, query]
-}
-
-
 export function useSetupIntent() {
 
-    const query = useQuery({
+    const { status } = useUser()
+
+    const setupIntentQuery = useQuery({
         queryKey: ["create-setup-intent"],
         queryFn: () => httpsCallable(fire.functions, "onRequestStripeSetupIntent")(),
+        enabled: status === "success",
+        retryOnMount: false,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         refetchOnReconnect: false,
     })
 
-    return [query?.data?.data, query]
-}
-
-
-export function useCreateSubscription(intentId) {
-
-    const scriptId = useScriptIdFromRouter()
-
-    const query = useQuery({
-        queryKey: ["create-subscription", intentId],
-        queryFn: () => httpsCallable(fire.functions, "onRequestCreateStripeSubscription")({
-            intentId,
-            scriptId,
-        }),
-        enabled: !!intentId && !!scriptId,
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-    })
-
-    return query
+    return [setupIntentQuery?.data?.data, setupIntentQuery]
 }
 
 
 export function useSubscription() {
 
     const scriptId = useScriptIdFromRouter()
+    const { data: user } = useUser()
 
-    const query = useQuery({
-        queryKey: ["subscription", scriptId],
-        queryFn: () => httpsCallable(fire.functions, "onRequestSubscriptionForScript")({
-            scriptId,
-        }),
+    const subQuery = useFirestoreCollectionData(query(
+        collection(fire.db, STRIPE_CUSTOMERS_COLLECTION, user?.uid ?? "placeholder", "subscriptions"),
+        where("metadata.scriptId", "==", scriptId ?? "placeholder"),
+    ), {
+        idField: "id",
     })
 
-    return [query?.data?.data, query]
+    return [subQuery.data?.[0], subQuery]
 }
 
 
 export function usePaymentMethods() {
 
-    const query = useQuery({
+    const { status } = useUser()
+
+    const pmQuery = useQuery({
         queryKey: ["get-payment-methods"],
         queryFn: () => httpsCallable(fire.functions, "onRequestPaymentMethods")(),
+        enabled: status === "success",
     })
 
-    return [query?.data?.data, query]
+    return [pmQuery?.data?.data, pmQuery]
+}
+
+
+export function useScriptUsage() {
+
+    const scriptId = useScriptIdFromRouter()
+    const { status } = useUser()
+
+    const usageQuery = useQuery({
+        queryKey: ["get-script-usage"],
+        queryFn: () => httpsCallable(fire.functions, "onRequestScriptUsage")({
+            scriptId,
+        }),
+        enabled: status === "success",
+    })
+
+    return [usageQuery?.data?.data, usageQuery]
 }

@@ -1,11 +1,10 @@
 import { Center, Loader, Stack } from "@mantine/core"
 import CreateHeader from "@web/components/CreateHeader"
 import { fire } from "@web/modules/firebase"
-import { collection, doc, runTransaction, serverTimestamp } from "firebase/firestore"
+import { httpsCallable } from "firebase/functions"
 import { useRouter } from "next/router"
-import { useEffect, useMemo } from "react"
+import { useQuery } from "react-query"
 import { useUser } from "reactfire"
-import { SCRIPT_COLLECTION } from "shared"
 import { adjectives, animals, colors, uniqueNamesGenerator } from "unique-names-generator"
 
 
@@ -20,37 +19,24 @@ const randomName = () => uniqueNamesGenerator({
 export default function CreatePage() {
 
     const router = useRouter()
-    const { data: user, status: userStatus } = useUser()
+    const { status: userStatus } = useUser()
 
-    const newScriptRef = useMemo(() => doc(collection(fire.db, SCRIPT_COLLECTION)), [])
-
-    const createScript = async () => {
-
-        console.debug("Creating script", newScriptRef.id)
-
-        const success = await runTransaction(fire.db, async (t) => {
-            const scriptDoc = await t.get(newScriptRef)
-
-            if (scriptDoc.exists())
-                return false
-
-            t.set(newScriptRef, {
+    useQuery({
+        queryKey: ["create-script", router.query.idemp],
+        queryFn: async () => {
+            const { data: { scriptId } } = await httpsCallable(fire.functions, "onRequestCreateScript")({
                 name: randomName(),
-                createdAt: serverTimestamp(),
-                owner: user.uid,
             })
 
-            return true
-        })
-
-        if (success)
-            router.replace(`/script/${newScriptRef.id}`)
-    }
-
-    useEffect(() => {
-        if (userStatus === "success" && user)
-            createScript()
-    }, [newScriptRef, userStatus, user])
+            router.replace(`/script/${scriptId}`)
+        },
+        enabled: userStatus === "success",
+        retry: false,
+        retryOnMount: false,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+    })
 
     return (
         <Stack spacing={0} className="grow">

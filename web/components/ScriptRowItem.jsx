@@ -1,17 +1,19 @@
 import { Group, Text } from "@mantine/core"
 import Link from "next/link"
 import { TbFile, TbScript } from "react-icons/tb"
+import { PLAN, PRICE_ID_PLAN } from "shared"
 
 
 const Icons = {
-    paid: <TbScript className="text-xl fill-yellow" />,
-    free: <TbFile className="text-xl stroke-dark-300" />,
+    [PLAN.FREE]: <TbFile className="text-xl stroke-dark-300" />,
+    [PLAN.LITTLE]: <TbScript className="text-xl fill-yellow" />,
 }
 
 
 export default function ScriptItem({ script, onOpen }) {
 
-    const icon = Icons[script.subscription ? "paid" : "free"]
+    const plan = PRICE_ID_PLAN[script.subscription.items[0].price.id]
+    const icon = Icons[plan]
 
     return (
         <Link href={`/script/${script.id}`} className="no-underline" onClick={onOpen} key={script.id}>

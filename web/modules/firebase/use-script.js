@@ -1,12 +1,11 @@
-import { Timestamp, collection, doc, limit, orderBy, query, where } from "firebase/firestore"
-import { createContext, useContext } from "react"
+import { collection, doc, limit, orderBy, query, where } from "firebase/firestore"
+import { useRouter } from "next/router"
+import { createContext, useContext, useEffect } from "react"
 import { useFirestoreCollectionData, useFirestoreDocData } from "reactfire"
+import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SOURCE_FILE_PATH, TRIGGER_COLLECTION } from "shared"
 import { fire, useStorageFileContent } from "."
 import { useScriptIdFromRouter } from "../util"
-import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SOURCE_FILE_PATH, TRIGGER_COLLECTION, getLastBillingCycleStartDate } from "shared"
-import { useFirestoreCount } from "./use-count-query"
-import { useRouter } from "next/router"
-import { useEffect } from "react"
+import { useScriptUsage, useSubscription } from "../stripe"
 
 
 const scriptContext = createContext({
@@ -49,13 +48,8 @@ export function ScriptProvider({ children }) {
         idField: "id",
     })
 
-    const [existingRunsCount, existingRunsCountQuery] = useFirestoreCount(query(
-        collection(fire.db, SCRIPT_RUN_COLLECTION),
-        where("script", "==", scriptDocRef),
-        where("startedAt", ">=", Timestamp.fromDate(getLastBillingCycleStartDate()))
-    ), {
-        queryKey: scriptId,
-    })
+    const [subscription, subscriptionQuery] = useSubscription()
+    const [usage, usageQuery] = useScriptUsage()
 
     return (
         <scriptContext.Provider value={{
@@ -65,16 +59,18 @@ export function ScriptProvider({ children }) {
                 sourceCode,
                 triggers,
                 runs,
-                runCount: existingRunsCount,
+                subscription,
+                usage,
             },
             isLoaded: scriptStatus === "success" &&
                 triggersStatus === "success" &&
                 runsStatus === "success" &&
-                existingRunsCountQuery.isSuccess &&
+                subscriptionQuery.status === "success" &&
+                usageQuery.isSuccess &&
                 sourceCode !== undefined,
         }}>
             {children}
-        </scriptContext.Provider>
+        </scriptContext.Provider >
     )
 }
 

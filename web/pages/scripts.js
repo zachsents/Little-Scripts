@@ -1,8 +1,9 @@
-import { Center, Loader, SimpleGrid, Stack, Text, Title } from "@mantine/core"
+import { Button, Center, Loader, SimpleGrid, Stack, Text, Title } from "@mantine/core"
 import CreateHeader from "@web/components/CreateHeader"
 import ScriptItem from "@web/components/ScriptRowItem"
 import { useMyScripts } from "@web/modules/firebase/use-my-scripts"
-import { TbScript } from "react-icons/tb"
+import Link from "next/link"
+import { TbPlus, TbScript } from "react-icons/tb"
 
 export default function ScriptsPage() {
 
@@ -12,7 +13,7 @@ export default function ScriptsPage() {
         <Stack spacing={0} className="grow">
             <CreateHeader />
             <Center className="flex-1" py="lg">
-                <Stack>
+                <Stack align="center">
                     <Title order={2}>My Scripts</Title>
 
                     {status == "loading" ?
@@ -28,6 +29,12 @@ export default function ScriptsPage() {
                             <Text color="dimmed" size="sm" align="center">
                                 No scripts
                             </Text>}
+                    <Button
+                        component={Link} href="/create"
+                        leftIcon={<TbPlus />}
+                    >
+                        Create New Script
+                    </Button>
                 </Stack>
             </Center>
         </Stack>

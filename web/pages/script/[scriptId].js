@@ -21,7 +21,7 @@ export default function ScriptPage() {
         if (router.query.billing == "success") {
             openContextModal({
                 modal: "upgrade",
-                title: "You've been upgraded!",
+                title: "You're being upgraded!",
                 innerProps: {
                     initialStep: 2,
                 },

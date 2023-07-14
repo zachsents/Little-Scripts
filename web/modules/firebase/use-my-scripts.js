@@ -3,6 +3,7 @@ import { useFirestoreCollectionData, useUser } from "reactfire"
 import { SCRIPT_COLLECTION, STRIPE_CUSTOMERS_COLLECTION } from "shared"
 import { fire } from "."
 
+
 export function useMyScripts() {
     const { data: user } = useUser()
 
@@ -15,7 +16,7 @@ export function useMyScripts() {
 
     const { data: scripts, ...scriptsQuery } = useFirestoreCollectionData(query(
         collection(fire.db, SCRIPT_COLLECTION),
-        where("owner", "==", user?.uid ?? "none"),
+        where("owner", "==", user?.uid ?? "placeholder"),
     ), {
         idField: "id",
     })

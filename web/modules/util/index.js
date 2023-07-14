@@ -1,10 +1,12 @@
+import { Text } from "@mantine/core"
 import { modals } from "@mantine/modals"
-import { fire, useScript } from "@web/modules/firebase"
-import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from "firebase/firestore"
+import { fire } from "@web/modules/firebase"
+import { deleteDoc, doc } from "firebase/firestore"
+import { httpsCallable } from "firebase/functions"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { SCRIPT_COLLECTION, TRIGGER_COLLECTION } from "shared"
+import { TRIGGER_COLLECTION } from "shared"
 
 
 export function useScriptIdFromRouter() {
@@ -41,22 +43,19 @@ export function useDeleteTrigger(triggerId) {
 export function useDeleteScript() {
 
     const router = useRouter()
-    const { script } = useScript()
+    const scriptId = useScriptIdFromRouter()
 
     const deleteQuery = useQuery({
-        queryKey: ["delete-script", script?.id],
+        queryKey: ["delete-script", scriptId],
         queryFn: async () => {
-            const scriptDocRef = doc(fire.db, SCRIPT_COLLECTION, script?.id)
 
-            const triggersSnapshot = await getDocs(query(
-                collection(fire.db, TRIGGER_COLLECTION),
-                where("script", "==", scriptDocRef)
-            ))
+            if (!scriptId)
+                return
 
-            const batch = writeBatch(fire.db)
-            triggersSnapshot.docs.forEach(doc => batch.delete(doc.ref))
-            batch.delete(scriptDocRef)
-            await batch.commit()
+            await httpsCallable(fire.functions, "onRequestDeleteScript")({
+                scriptId,
+            })
+
             router.push("/scripts")
         },
         enabled: false,
@@ -64,6 +63,11 @@ export function useDeleteScript() {
 
     const confirmDelete = () => modals.openConfirmModal({
         title: "Are you sure you want to delete this script?",
+        children: (
+            <Text size="sm">
+                This is irreversible. If you&apos;ve accrued any charges, you&apos;ll be billed for them.
+            </Text>
+        ),
         labels: { confirm: "Delete", cancel: "Keep it" },
         confirmProps: { color: "red" },
         onConfirm: deleteQuery.refetch,
