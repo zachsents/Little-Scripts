@@ -146,12 +146,27 @@ export async function changePlanForScipt(stripe, { scriptId, plan, paymentMethod
     if (subscription.items.data[0].price.id === requestedPriceId)
         throw new HttpsError("already-exists", "You are already subscribed to this plan")
 
+    // const usageRecords = await stripe.subscriptionItems.listUsageRecordSummaries(
+    //     subscription.items.data[0].id,
+    //     { limit: 1 }
+    // )
+
     await stripe.subscriptions.update(subscription.id, {
-        proration_behavior: "create_prorations",
+        proration_behavior: "none",
+        billing_cycle_anchor: "unchanged",
         items: [{
             id: subscription.items.data[0].id,
             price: requestedPriceId,
         }],
         default_payment_method: paymentMethod,
     })
+
+    // Not sure if we need to do this or not
+    // await stripe.subscriptionItems.createUsageRecord(newSubscription.items.data[0].id, {
+    //     action: "set",
+    //     quantity: Math.min(
+    //         usageRecords.data[0].total_usage,
+    //         MAX_FREE_RUNS,
+    //     ),
+    // })
 }

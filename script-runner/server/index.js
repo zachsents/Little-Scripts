@@ -31,7 +31,6 @@ app.use(morgan("short"))
  * @property {string} logUploadUrl The URL to upload the script's logs to.
  */
 
-
 app.post("/", async (req, res) => {
 
     const encodedMessage = req.body?.message?.data
@@ -43,13 +42,17 @@ app.post("/", async (req, res) => {
     const messageContent = JSON.parse(
         Buffer.from(encodedMessage, "base64").toString().trim()
     )
-    const { scriptRunId, sourceDownloadUrl, logUploadUrl } = messageContent
+    const { scriptRunId, sourceDownloadUrl, logUploadUrl, triggerData } = messageContent
 
     console.debug(messageContent)
 
     const sourceCode = await fetch(sourceDownloadUrl).then(res => res.text())
-
     await fs.writeFile(USER_SCRIPT_PATH, sourceCode)
+
+    await fs.writeFile(
+        path.join(USER_SCRIPT_PATH, "../triggerData.js"),
+        `export default ${JSON.stringify(triggerData)}`
+    )
 
     const result = await new Promise(resolve => {
         exec("node .", {

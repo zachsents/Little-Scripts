@@ -66,6 +66,7 @@ export function useScriptUsage() {
             scriptId,
         }),
         enabled: status === "success",
+        refetchInterval: 10000,
     })
 
     return [usageQuery?.data?.data, usageQuery]

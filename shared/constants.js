@@ -45,13 +45,13 @@ export const USER_COLLECTION = "users"
 export const SOURCE_FILE_PATH = scriptId => `scripts/${scriptId}/source.js`
 export const LOG_FILE_PATH = (scriptId, scriptRunId) => `scripts/${scriptId}/runs/${scriptRunId}/log.txt`
 
-export const ASYNC_TRIGGER_URL = triggerId => process.env === "production" ?
-    `${BASE_URL}/trigger/async-url?t=${triggerId}` :
-    `${FUNCTIONS_URL("onRequestAsyncUrlTrigger")}?t=${triggerId}`
+export const ASYNC_TRIGGER_URL = process.env.NODE_ENV === "production" ?
+    `${BASE_URL}/trigger/async-url?t=` :
+    `${FUNCTIONS_URL("onRequestAsyncUrlTrigger")}?t=`
 
-export const SYNC_TRIGGER_URL = triggerId => process.env === "production" ?
-    `${BASE_URL}/trigger/sync-url?t=${triggerId}` :
-    `${FUNCTIONS_URL("onRequestSyncUrlTrigger")}?t=${triggerId}`
+export const SYNC_TRIGGER_URL = process.env.NODE_ENV === "production" ?
+    `${BASE_URL}/trigger/sync-url?t=` :
+    `${FUNCTIONS_URL("onRequestSyncUrlTrigger")}?t=`
 
 
 // ===== Stripe =====

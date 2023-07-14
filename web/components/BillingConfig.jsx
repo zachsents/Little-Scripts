@@ -1,4 +1,4 @@
-import { ActionIcon, Badge, Button, Divider, Group, Menu, Progress, Stack, Table, Text, Tooltip } from "@mantine/core"
+import { ActionIcon, Badge, Button, Center, Divider, Group, Loader, Menu, Progress, Stack, Table, Text, Tooltip } from "@mantine/core"
 import { openConfirmModal, openContextModal } from "@mantine/modals"
 import { fire, useScript } from "@web/modules/firebase"
 import { TbArrowBigDownLines, TbArrowBigUpLines, TbDots } from "react-icons/tb"
@@ -21,22 +21,26 @@ const shortDateFormat = {
 
 export default function BillingConfig() {
 
-    const { script } = useScript()
-    const plan = PRICE_ID_PLAN[script.subscription.items[0].price.id]
+    const { script, isLoaded } = useScript()
+    const plan = PRICE_ID_PLAN[script?.subscription?.items[0].price.id]
 
     return (
         <ConfigPanel title="Billing">
-            <Stack spacing="xl">
-                {plan == PLAN.FREE && <>
-                    <ManagePlanSection />
-                    <UsageSection />
-                </>}
+            {isLoaded ?
+                <Stack spacing="xl">
+                    {plan == PLAN.FREE && <>
+                        <ManagePlanSection />
+                        <UsageSection />
+                    </>}
 
-                {plan == PLAN.LITTLE && <>
-                    <UsageSection />
-                    <ManagePlanSection />
-                </>}
-            </Stack>
+                    {plan == PLAN.LITTLE && <>
+                        <UsageSection />
+                        <ManagePlanSection />
+                    </>}
+                </Stack> :
+                <Center py="xl">
+                    <Loader />
+                </Center>}
         </ConfigPanel>
     )
 }

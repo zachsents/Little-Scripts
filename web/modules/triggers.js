@@ -114,7 +114,7 @@ export const TriggerInfo = {
         allowMultiple: false,
         config: ({ trigger }) => {
 
-            const url = ASYNC_TRIGGER_URL(trigger.id)
+            const url = ASYNC_TRIGGER_URL + trigger.id
 
             return (
                 <Stack spacing="xs">
@@ -145,7 +145,7 @@ export const TriggerInfo = {
         allowMultiple: false,
         config: ({ trigger }) => {
 
-            const url = SYNC_TRIGGER_URL(trigger.id)
+            const url = SYNC_TRIGGER_URL + trigger.id
 
             return (
                 <Stack spacing="xs">
