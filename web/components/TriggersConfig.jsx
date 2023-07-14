@@ -97,7 +97,7 @@ function TriggerTypeButton({ type, onCreate }) {
                 {createQuery.isFetching ?
                     <Loader size="xs" /> :
                     <triggerInfo.icon />}
-                <Stack spacing={0} align="flex-start">
+                <Stack spacing={0} align="flex-start" className="flex-1">
                     <Text ta="left" fw="bold" color={triggerInfo.color}>
                         {triggerInfo.name}
                     </Text>

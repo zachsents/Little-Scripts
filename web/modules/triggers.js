@@ -1,11 +1,11 @@
-import { Button, Stack } from "@mantine/core"
+import { Button, CopyButton, Stack } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import ConfigButtons from "@web/components/ConfigButtons"
 import ScheduleBuilder from "@web/components/ScheduleBuilder"
 import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore"
-import { TbClock, TbHandClick, TbRun } from "react-icons/tb"
+import { TbCheck, TbClock, TbCopy, TbHandClick, TbLink, TbRun, TbWebhook } from "react-icons/tb"
 import { useQuery } from "react-query"
-import { RUN_STATUS, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, TRIGGER_TYPE, isStatusFinished } from "shared"
+import { ASYNC_TRIGGER_URL, RUN_STATUS, SCRIPT_RUN_COLLECTION, SYNC_TRIGGER_URL, TRIGGER_COLLECTION, TRIGGER_TYPE, isStatusFinished } from "shared"
 import { fire, useScript } from "./firebase"
 import { useMainStore } from "./store"
 import { useQueryWithPayload } from "./util"
@@ -105,6 +105,68 @@ export const TriggerInfo = {
             )
         },
     },
+    [TRIGGER_TYPE.ASYNC_URL]: {
+        name: "Webhook (Async URL)",
+        description: "Triggered by a request to a URL. Responds as soon as the request is received.",
+        renderSubtitle: () => "Click to view details",
+        icon: TbWebhook,
+        color: "dark",
+        allowMultiple: false,
+        config: ({ trigger }) => {
+
+            const url = ASYNC_TRIGGER_URL(trigger.id)
+
+            return (
+                <Stack spacing="xs">
+                    <CopyButton value={url}>
+                        {({ copied, copy }) => (
+                            <Button
+                                variant="subtle"
+                                leftIcon={copied ? <TbCheck /> : <TbCopy />}
+                                onClick={copy}
+                            >
+                                {copied ? "Copied!" : "Copy URL"}
+                            </Button>
+                        )}
+                    </CopyButton>
+                    <pre className="bg-gray-50 text-xs rounded-sm whitespace-pre-wrap break-all font-mono p-xs">
+                        {url}
+                    </pre>
+                </Stack>
+            )
+        },
+    },
+    [TRIGGER_TYPE.SYNC_URL]: {
+        name: "Request (Sync URL)",
+        description: "Triggered by a request to a URL. Responds after the script has finished running.",
+        renderSubtitle: () => "Click to view details",
+        icon: TbLink,
+        color: "dark",
+        allowMultiple: false,
+        config: ({ trigger }) => {
+
+            const url = SYNC_TRIGGER_URL(trigger.id)
+
+            return (
+                <Stack spacing="xs">
+                    <CopyButton value={url}>
+                        {({ copied, copy }) => (
+                            <Button
+                                variant="subtle"
+                                leftIcon={copied ? <TbCheck /> : <TbCopy />}
+                                onClick={copy}
+                            >
+                                {copied ? "Copied!" : "Copy URL"}
+                            </Button>
+                        )}
+                    </CopyButton>
+                    <pre className="bg-gray-50 text-xs rounded-sm whitespace-pre-wrap break-all font-mono p-xs">
+                        {url}
+                    </pre>
+                </Stack>
+            )
+        },
+    }
 }
 
 

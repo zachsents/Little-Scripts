@@ -18,6 +18,7 @@ import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/schedu
  * @property {string} status
  * @property {import("firebase-admin/firestore").DocumentReference} script
  * @property {import("firebase-admin/firestore").DocumentReference} trigger
+ * @property {object} triggerData Data passed into the script run from the trigger
  *
  * @property {import("firebase-admin/firestore").Timestamp} startedAt
  * @property {import("firebase-admin/firestore").Timestamp} scheduledAt
@@ -102,6 +103,7 @@ export const onScriptRunWritten = onDocumentWritten({
                 scriptRunId: event.data.after.id,
                 sourceDownloadUrl,
                 logUploadUrl,
+                triggerData: scriptRun.triggerData ?? {},
             }
         })
     }
@@ -291,6 +293,7 @@ export const onRequestDeleteScript = onCall({
 
 
 export * from "./stripe.js"
+export * from "./triggers.js"
 
 
 export function ownsScript(uid, scriptId) {

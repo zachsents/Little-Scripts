@@ -24,6 +24,14 @@
         ],
         "rewrites": [
             {
+                "source": "/trigger/async-url",
+                "function": "onRequestAsyncUrlTrigger"
+            },
+            {
+                "source": "/trigger/sync-url",
+                "function": "onRequestSyncUrlTrigger"
+            },
+            {
                 "regex": "^/script/([^/]+?)(?:/)?$",
                 "destination": "/script/[scriptId].html"
             }

@@ -26,8 +26,8 @@ export default function SelectedTriggerConfig() {
             </Group>
         }>
             <Stack spacing="xl">
-                <Group className="bg-gray-100 rounded px-lg py-xs" position="apart">
-                    <Group>
+                <Group noWrap className="bg-gray-100 rounded px-lg py-xs" position="apart">
+                    <Group noWrap>
                         <triggerInfo.icon />
                         <Text fw="bold" color={triggerInfo.color}>{triggerInfo.name}</Text>
                     </Group>
