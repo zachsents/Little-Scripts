@@ -1,11 +1,11 @@
 import { defineSecret } from "firebase-functions/params"
-import { PubSub } from "@google-cloud/pubsub"
+import { setGlobalOptions } from "firebase-functions/v2"
 import { initializeApp } from "firebase-admin/app"
 import { getFirestore } from "firebase-admin/firestore"
 import { getFunctions } from "firebase-admin/functions"
 import { getStorage } from "firebase-admin/storage"
-import { setGlobalOptions } from "firebase-functions/v2"
 import { getAuth } from "firebase-admin/auth"
+import { PubSub } from "@google-cloud/pubsub"
 
 export const stripeKey = defineSecret("firestore-stripe-payments-STRIPE_API_KEY")
 
