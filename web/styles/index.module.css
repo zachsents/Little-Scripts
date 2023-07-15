@@ -1,0 +1,7 @@
+.heroContainer {
+    background-image: radial-gradient(ellipse at 50% 55%, var(--mantine-color-violet-3) 0%, transparent 100%);
+}
+
+.featureGradient {
+    background-image: radial-gradient(circle at 50% 50%, var(--mantine-color-primary-2) 0%, transparent 60%);
+}
