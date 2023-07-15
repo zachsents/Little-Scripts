@@ -13,17 +13,14 @@ service cloud.firestore {
         function ownsAttachedScript(resource) {
         	let script = get(resource.data.script);
             return resource != null && 
-                request.auth != null && 
-                script != null &&
-                'owner' in script.data &&
-                request.auth.uid == script.data.owner;
+                ownsScript(script);
         }
 
-        // Only allow users to read/write scripts they own
+        // Only allow users to read & update their own scripts
+        // Creating & deleting is handled by Cloud Functions
         match /scripts/{script} {
-            allow read: if resource == null;
-            allow read, update, delete: if ownsScript(resource);
-            allow create: if ownsScript(request.resource);
+            allow read: if ownsScript(resource) || resource == null;
+            allow update: if ownsScript(resource) && ownsScript(request.resource);
         }
 
         // Only allow users to create script runs for their own scripts with either
@@ -47,7 +44,8 @@ service cloud.firestore {
             allow read: if request.auth.uid == uid;
 
             match /checkout_sessions/{id} {
-                allow read, write: if request.auth.uid == uid;
+                // allow read, write: if request.auth.uid == uid;
+                allow read: if request.auth.uid == uid;
             }
             match /subscriptions/{id} {
                 allow read: if request.auth.uid == uid;
