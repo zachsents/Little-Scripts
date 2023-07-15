@@ -58,6 +58,7 @@ app.post("/", async (req, res) => {
         exec("node .", {
             cwd: path.dirname(USER_SCRIPT_PATH),
             uid: 1001,
+            gid: 1001,
             env: {},
         }, (error, stdout, stderr) => {
             resolve({ error, stdout, stderr })

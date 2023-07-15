@@ -5,13 +5,12 @@ RUN apt update
 RUN apt install -y libgtk-3-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 xvfb
 
 # Set up unpriveleged user
-RUN groupadd ls-group
-RUN useradd -m -g ls-group -u 1001 ls-user
+RUN useradd -m -u 1001 ls-user
 
 # Set up user script directory
 WORKDIR /home/ls-user/script
 COPY ./user-script .
-RUN chown -R ls-user:ls-group .
+RUN chown -R ls-user:ls-user .
 
 # Need to switch to unpriveleged user to install dependencies
 # so puppeteer stuff is in the right cache
