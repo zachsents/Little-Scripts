@@ -149,7 +149,7 @@ export default function IndexPage() {
                     comingSoon
                     reverse
                 >
-                    We&apos;ll automatically sync your code with your GitHub repository, so you can keep working in your favorite editor. The best tool is the one you don&apos;t have to use!
+                    We&apos;ll automatically deploy code from your GitHub repository, so you can keep working in your favorite editor. The best tool is the one you don&apos;t have to use!
                 </FeatureSection>
 
                 <FeatureSection
