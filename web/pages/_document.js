@@ -10,6 +10,11 @@ export default function Document() {
 
                 <title>LittleScript</title>
 
+                <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+                <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+                <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+                <link rel="manifest" href="/site.webmanifest" />
+
                 <meta
                     property="og:title"
                     content="LittleScript"
@@ -18,11 +23,9 @@ export default function Document() {
                 <meta property="og:image" content="/og.png" />
                 <meta
                     name="description"
-                    content="Get your code running quickly"
+                    content="The easiest way to deploy automation scripts in the cloud"
                     key="description"
                 />
-
-                <link rel="icon" href="/favicon.png" key="favicon" />
 
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
