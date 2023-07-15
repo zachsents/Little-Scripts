@@ -11,7 +11,7 @@ import "dotenv/config"
 
 // Constants
 const PORT = 5050
-const USER_SCRIPT_PATH = "/user-script/index.js"
+const USER_SCRIPT_PATH = "/home/ls-user/script/index.js"
 const FINISH_SCRIPT_RUN_TOPIC = "finish-script-run"
 
 // PubSub setup
@@ -57,8 +57,7 @@ app.post("/", async (req, res) => {
     const result = await new Promise(resolve => {
         exec("node .", {
             cwd: path.dirname(USER_SCRIPT_PATH),
-            uid: 1000,
-            gid: 1000,
+            uid: 1001,
             env: {},
         }, (error, stdout, stderr) => {
             resolve({ error, stdout, stderr })
