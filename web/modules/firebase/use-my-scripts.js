@@ -1,7 +1,7 @@
 import { collection, query, where } from "firebase/firestore"
 import { useFirestoreCollectionData, useUser } from "reactfire"
 import { SCRIPT_COLLECTION, STRIPE_CUSTOMERS_COLLECTION } from "shared"
-import { fire } from "."
+import { fire, useFirestoreCount } from "."
 
 
 export function useMyScripts() {
@@ -29,4 +29,16 @@ export function useMyScripts() {
         data: scripts,
         ...scriptsQuery,
     }
+}
+
+
+export function useScriptCount() {
+    const { data: user } = useUser()
+
+    return useFirestoreCount(user?.uid && query(
+        collection(fire.db, SCRIPT_COLLECTION),
+        where("owner", "==", user.uid),
+    ), {
+        queryKey: `script-count-${user?.uid}`,
+    })
 }

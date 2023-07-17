@@ -10,13 +10,13 @@ const Icons = {
 }
 
 
-export default function ScriptItem({ script, onOpen }) {
+export default function ScriptItem({ script, onOpen, tab }) {
 
     const plan = PRICE_ID_PLAN[script.subscription.items[0].price.id]
     const icon = Icons[plan]
 
     return (
-        <Link href={`/script/${script.id}`} className="no-underline" onClick={onOpen} key={script.id}>
+        <Link href={`/script/${script.id}${tab ? `?tab=${tab}` : ""}`} className="no-underline" onClick={onOpen} key={script.id}>
             <Group className="group hover:bg-gray-50 cursor-pointer base-border rounded px-lg py-sm text-dark" position="apart">
                 <Group>
                     {icon}

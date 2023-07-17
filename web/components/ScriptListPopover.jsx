@@ -1,9 +1,10 @@
-import { Center, Loader, Popover, ScrollArea, Stack, Text } from "@mantine/core"
+import { Button, Center, Loader, Popover, ScrollArea, Stack, Text } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { useMyScripts } from "@web/modules/firebase/use-my-scripts"
 import ScriptItem from "./ScriptRowItem"
+import { TbPlus } from "react-icons/tb"
 
-export default function ScriptListPopover({ children }) {
+export default function ScriptListPopover({ children, tab }) {
 
     const [opened, handlers] = useDisclosure(false)
     const { data: scripts, status } = useMyScripts()
@@ -31,8 +32,17 @@ export default function ScriptListPopover({ children }) {
                                 scripts?.length == 0 ?
                                     <Text color="dimmed" size="sm" align="center">No scripts</Text> :
                                     scripts?.map(script =>
-                                        <ScriptItem script={script} onOpen={handlers.close} key={script.id} />
+                                        <ScriptItem
+                                            script={script}
+                                            onOpen={handlers.close}
+                                            tab={tab}
+                                            key={script.id}
+                                        />
                                     )}
+
+                            <Button leftIcon={<TbPlus />}>
+                                Create a Script
+                            </Button>
                         </Stack>
                     </ScrollArea.Autosize>
                 </Stack>

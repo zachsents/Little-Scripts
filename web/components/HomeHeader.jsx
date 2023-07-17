@@ -4,24 +4,19 @@ import NavLink from "./NavLink"
 import Link from "next/link"
 
 
-export default function HomeHeader() {
+export default function HomeHeader({ firstTime }) {
     return (
         <div className="px-xl py-md">
             <Group position="apart" className="w-full">
                 <Group>
-                    <Anchor href="/" className="text-white hover:text-primary transition-colors hover:no-underline">
-                        <Group fz="1.75rem" spacing="0.5em">
-                            <TbScript />
-                            <Text fw="bold">LittleScript</Text>
-                        </Group>
-                    </Anchor>
+                    <HomeBrand />
                 </Group>
 
                 <Group px="xl">
-                    <NavLink href="/about" color="white">
-                        About
+                    <NavLink href="#features" color="white">
+                        Features
                     </NavLink>
-                    <NavLink href="/pricing" color="white">
+                    <NavLink href="#pricing" color="white">
                         Pricing
                     </NavLink>
 
@@ -30,10 +25,22 @@ export default function HomeHeader() {
                         component={Link} href="/scripts"
                         className="hover:bg-primary hover:text-white transition-colors"
                     >
-                        Start for Free
+                        {firstTime ? "Start for Free" : "Go to Scripts"}
                     </Button>
                 </Group>
             </Group>
         </div>
+    )
+}
+
+
+export function HomeBrand() {
+    return (
+        <Anchor href="/" className="text-white hover:text-primary transition-colors hover:no-underline">
+            <Group fz="1.75rem" spacing="0.5em">
+                <TbScript />
+                <Text fw="bold">LittleScript</Text>
+            </Group>
+        </Anchor>
     )
 }
