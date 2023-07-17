@@ -20,15 +20,15 @@ export default function IndexPage() {
     const isFirstTime = (scriptCount ?? 0) == 0
 
     return (<>
-        <div className={classNames("h-[65rem] bg-dark-900 overflow-hidden", styles.heroContainer)}>
+        <div className={classNames("h-screen md:h-[65rem] bg-dark-900 overflow-hidden", styles.heroContainer)}>
             <HomeHeader firstTime={isFirstTime} />
 
             <div className="mt-36 flex flex-col items-center gap-6 max-w-screen-lg mx-auto">
-                <Title order={1} className="text-white text-center text-8xl">
+                <Title order={1} className="text-white text-center text-5xl lg:text-8xl">
                     Automation scripts for everyone
                 </Title>
 
-                <Text className="text-gray-300 text-3xl">
+                <Text className="text-gray-300 text-xl lg:text-3xl text-center">
                     The easiest way to deploy automation scripts in the cloud
                 </Text>
 
@@ -41,7 +41,7 @@ export default function IndexPage() {
                     >
                         Make your first Script
                     </Button> :
-                    <Group>
+                    <Group position="center">
                         <Button
                             size="lg" rightIcon={<TbScriptPlus />} variant="white"
                             component={Link} href="/create"
@@ -58,7 +58,7 @@ export default function IndexPage() {
 
                 <Space h="xs" />
 
-                <div className="w-full relative">
+                <div className="w-full relative hidden md:block">
                     <img
                         src="/code-editor.png"
                         className="w-full pt-xs bg-white rounded-lg invert"
@@ -138,8 +138,8 @@ export default function IndexPage() {
             </Stack>
         </div>
 
-        <div id="features">
-            <Stack spacing={0} py="4rem" className="max-w-screen-lg mx-auto">
+        <div id="features" className="px-xl">
+            <Stack py="4rem" className="max-w-screen-lg mx-auto gap-12 md:gap-0">
                 <FeatureSection
                     title="Dead-simple deployment"
                     icon={TbCloudComputing}
@@ -204,12 +204,12 @@ export default function IndexPage() {
 
         <div>
             <div className={classNames(
-                "max-w-screen-lg mx-auto rounded-xl bg-dark-900 px-16 py-24 relative overflow-hidden",
+                "max-w-screen-lg mx-auto md:rounded-xl bg-dark-900 px-xl md:px-16 py-24 relative overflow-hidden",
                 styles.ctaContainer,
             )}>
                 <img
                     src="/code-editor.png"
-                    className="w-3/4 invert rounded-lg absolute left-2/3 top-20 px-xs py-md bg-white"
+                    className="w-3/4 invert rounded-lg absolute left-2/3 top-20 px-xs py-md bg-white hidden md:block"
                 />
 
                 <Group>
@@ -231,7 +231,7 @@ export default function IndexPage() {
             </div>
         </div>
 
-        <Stack className="px-xl py-20" spacing="3rem" id="pricing">
+        <Stack className="px-xs md:px-xl py-20" spacing="3rem" id="pricing">
             <div className="flex flex-col gap-2 max-w-screen-sm self-center">
                 <Title order={2} className="text-4xl text-center">Pricing</Title>
                 <Text ta="center">
@@ -251,7 +251,13 @@ export default function IndexPage() {
                 >
                     <Button
                         component={Link} href="/create"
-                        size="lg"
+                        size="lg" className="hidden md:block"
+                    >
+                        Create a Free Script
+                    </Button>
+                    <Button
+                        component={Link} href="/create"
+                        size="sm" className="md:hidden"
                     >
                         Create a Free Script
                     </Button>
@@ -275,6 +281,14 @@ export default function IndexPage() {
                         <Button
                             size="lg"
                             color="violet"
+                            className="hidden md:block"
+                        >
+                            Upgrade a Script to Get Started
+                        </Button>
+                        <Button
+                            size="sm"
+                            color="violet"
+                            className="md:hidden"
                         >
                             Upgrade a Script to Get Started
                         </Button>
@@ -361,9 +375,17 @@ function FeatureSection({ title, children, icon: Icon, graphic, comingSoon = fal
         })}>
             <Stack spacing="md" className="flex-1">
                 <Group>
-                    <Title order={3} className="text-3xl">
+                    <Group noWrap className="md:hidden">
+                        <Icon className="text-4xl text-violet" />
+                        <Title order={3} className="text-2xl flex-1">
+                            {title}
+                        </Title>
+                    </Group>
+
+                    <Title order={3} className="text-3xl hidden md:block">
                         {title}
                     </Title>
+
                     {comingSoon &&
                         <Badge size="xl">Coming Soon</Badge>}
                 </Group>
@@ -371,7 +393,7 @@ function FeatureSection({ title, children, icon: Icon, graphic, comingSoon = fal
                     {children}
                 </Text>
             </Stack>
-            <div className="flex-1 flex justify-center">
+            <div className="flex-1 justify-center hidden md:flex">
                 {graphic || Icon &&
                     <Center className={classNames("group text-8xl w-3/4 aspect-square rounded-full", styles.featureGradient)}>
                         <Center className="shadow-xl rounded-full aspect-square p-[3rem] text-violet-500 bg-dark-600 group-hover:scale-110 transition-transform">
@@ -404,7 +426,7 @@ function PricingCard({ title, description, features, children, color, emph }) {
     return (
         <div className={classNames({
             "rounded-xl shadow-lg p-12": true,
-            "bg-dark-900 scale-110": emph,
+            "bg-dark-900 md:scale-110": emph,
             [styles.ctaContainer]: emph,
         })}>
             <Stack spacing="xl">
