@@ -1,4 +1,4 @@
-import { Center, Loader, Stack } from "@mantine/core"
+import { Center, Loader, Stack, Text } from "@mantine/core"
 import CreateHeader from "@web/components/CreateHeader"
 import { fire } from "@web/modules/firebase"
 import { logEvent } from "firebase/analytics"
@@ -45,7 +45,12 @@ export default function CreatePage() {
         <Stack spacing={0} className="grow">
             <CreateHeader />
             <Center className="flex-1">
-                <Loader />
+                <Stack align="center">
+                    <Loader />
+                    <Text size="sm" ta="center">
+                        Creating script...
+                    </Text>
+                </Stack>
             </Center>
         </Stack>
     )

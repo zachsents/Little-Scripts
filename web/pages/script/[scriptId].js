@@ -1,4 +1,4 @@
-import { Center, Group, Loader, Stack } from "@mantine/core"
+import { Center, Group, Loader, Stack, Text } from "@mantine/core"
 import { openContextModal } from "@mantine/modals"
 import CodeSection from "@web/components/CodeSection"
 import ConfigSection from "@web/components/ConfigSection"
@@ -64,6 +64,11 @@ function ScriptPageContent() {
             </div>
         </Group> :
         <Center className="grow">
-            <Loader />
+            <Stack align="center">
+                <Loader />
+                <Text size="sm" ta="center">
+                    Hang tight...
+                </Text>
+            </Stack>
         </Center>
 }
