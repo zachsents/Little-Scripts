@@ -1,6 +1,7 @@
 import { Center, Loader, Stack } from "@mantine/core"
 import CreateHeader from "@web/components/CreateHeader"
 import { fire } from "@web/modules/firebase"
+import { logEvent } from "firebase/analytics"
 import { httpsCallable } from "firebase/functions"
 import { useRouter } from "next/router"
 import { useQuery } from "react-query"
@@ -27,6 +28,8 @@ export default function CreatePage() {
             const { data: { scriptId } } = await httpsCallable(fire.functions, "onRequestCreateScript")({
                 name: randomName(),
             })
+
+            logEvent(fire.analytics, "create_script", { scriptId })
 
             router.replace(`/script/${scriptId}`)
         },

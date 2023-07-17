@@ -12,6 +12,7 @@ import { PLAN } from "shared"
 import { httpsCallable } from "firebase/functions"
 import { fire } from "@web/modules/firebase"
 import { useRouter } from "next/router"
+import { logEvent } from "firebase/analytics"
 
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_KEY)
@@ -140,12 +141,15 @@ function UpgradeSubscriptionStep({ nextStep }) {
 
     const upgradeQuery = useQuery({
         queryKey: ["upgrade-subscription", scriptId],
-        queryFn: () => httpsCallable(fire.functions, "onRequestChangePlanForScript")({
-            scriptId,
-            plan,
-            setupIntent: router.query.setup_intent,
-            paymentMethod: router.query.payment_method,
-        }),
+        queryFn: async () => {
+            await httpsCallable(fire.functions, "onRequestChangePlanForScript")({
+                scriptId,
+                plan,
+                setupIntent: router.query.setup_intent,
+                paymentMethod: router.query.payment_method,
+            })
+            logEvent(fire.analytics, "upgrade_subscription", { scriptId, plan })
+        },
         enabled: !!scriptId &&
             !!(router.query.setup_intent || router.query.payment_method),
         retryOnMount: false,

@@ -6,6 +6,7 @@ import { COST_PER_RUN, MAX_FREE_RUNS, PLAN, PRICE_ID_PLAN } from "shared"
 import ConfigPanel from "./ConfigPanel"
 import { useQuery } from "react-query"
 import { httpsCallable } from "firebase/functions"
+import { logEvent } from "firebase/analytics"
 
 
 const BADGE_COLORS = {
@@ -74,10 +75,14 @@ function ManagePlanSection() {
 
     const downgradeQuery = useQuery({
         queryKey: ["downgrade-plan", script.id],
-        queryFn: () => httpsCallable(fire.functions, "onRequestChangePlanForScript")({
-            scriptId: script.id,
-            plan: PLAN.FREE,
-        }),
+        queryFn: async () => {
+            await httpsCallable(fire.functions, "onRequestChangePlanForScript")({
+                scriptId: script.id,
+                plan: PLAN.FREE,
+            })
+
+            logEvent(fire.analytics, "downgrade_plan", { scriptId: script.id })
+        },
         enabled: false,
     })
 
