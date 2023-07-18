@@ -3,8 +3,20 @@ import { useDisclosure } from "@mantine/hooks"
 import { useMyScripts } from "@web/modules/firebase/use-my-scripts"
 import ScriptItem from "./ScriptRowItem"
 import { TbPlus } from "react-icons/tb"
+import { useUserReady } from "@web/modules/firebase/auth"
 
-export default function ScriptListPopover({ children, tab }) {
+
+export default function ScriptListPopover({ children, ...props }) {
+
+    const isUserReady = useUserReady()
+
+    return isUserReady ?
+        <ScriptListPopoverInner {...props}>{children}</ScriptListPopoverInner> :
+        children
+}
+
+
+function ScriptListPopoverInner({ children, tab }) {
 
     const [opened, handlers] = useDisclosure(false)
     const { data: scripts, status } = useMyScripts()

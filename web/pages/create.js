@@ -1,11 +1,11 @@
 import { Center, Loader, Stack, Text } from "@mantine/core"
 import CreateHeader from "@web/components/CreateHeader"
 import { fire } from "@web/modules/firebase"
+import { useUserReady } from "@web/modules/firebase/auth"
 import { logEvent } from "firebase/analytics"
 import { httpsCallable } from "firebase/functions"
 import { useRouter } from "next/router"
 import { useQuery } from "react-query"
-import { useUser } from "reactfire"
 import { adjectives, animals, colors, uniqueNamesGenerator } from "unique-names-generator"
 
 
@@ -20,11 +20,12 @@ const randomName = () => uniqueNamesGenerator({
 export default function CreatePage() {
 
     const router = useRouter()
-    const { status: userStatus } = useUser()
+    const isUserReady = useUserReady()
 
     useQuery({
-        queryKey: ["create-script", router.query.idemp],
+        queryKey: ["create-script"],
         queryFn: async () => {
+
             const { data: { scriptId } } = await httpsCallable(fire.functions, "onRequestCreateScript")({
                 name: randomName(),
             })
@@ -33,7 +34,7 @@ export default function CreatePage() {
 
             router.replace(`/script/${scriptId}`)
         },
-        enabled: userStatus === "success",
+        enabled: isUserReady,
         retry: false,
         retryOnMount: false,
         refetchOnMount: false,

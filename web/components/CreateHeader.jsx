@@ -12,10 +12,10 @@ export default function CreateHeader() {
                 <Group>
                     <Brand />
 
-                    <NavLink href="/about" color="dimmed">
-                        About
+                    <NavLink href="/#features" color="dimmed">
+                        Features
                     </NavLink>
-                    <NavLink href="/pricing" color="dimmed">
+                    <NavLink href="/#pricing" color="dimmed">
                         Pricing
                     </NavLink>
                 </Group>
