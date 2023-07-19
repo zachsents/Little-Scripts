@@ -1,9 +1,9 @@
 import { onSchedule } from "firebase-functions/v2/scheduler"
+import { SCRIPT_COLLECTION, STRIPE_CUSTOMERS_COLLECTION, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION } from "shared"
 import { auth, db } from "./init.js"
-import { SCRIPT_COLLECTION, STRIPE_CUSTOMERS_COLLECTION } from "shared"
 
 
-export const purgeGhostUsers = onSchedule("every day 00:00", () => _purgeGhostUsers())
+export const purgeGhostUsers = onSchedule("every day 01:00", () => _purgeGhostUsers())
 
 
 async function _purgeGhostUsers(nextPageToken) {
@@ -35,3 +35,31 @@ async function _purgeGhostUsers(nextPageToken) {
     if (pageToken)
         await _purgeGhostUsers(pageToken)
 }
+
+
+export const purgeTriggerlessScripts = onSchedule("every day 00:00", async () => {
+
+    const scriptsSnapshot = await db.collection(SCRIPT_COLLECTION).get()
+    const batch = db.batch()
+
+    await Promise.all(
+        scriptsSnapshot.docs.map(async scriptDoc => {
+            const triggerCount = await db.collection(TRIGGER_COLLECTION)
+                .where("script", "==", scriptDoc.ref)
+                .count().get()
+                .then(snapshot => snapshot.data().count)
+
+            if (triggerCount != 0)
+                return
+
+            const subscriptionSnapshot = await db.collectionGroup("subscriptions").where("metadata.scriptId", "==", scriptDoc.id).get()
+
+            if (subscriptionSnapshot.docs[0].data().items[0].plan.id != STRIPE_FREE_PRICE_ID)
+                return
+
+            batch.delete(scriptDoc.ref)
+        })
+    )
+
+    await batch.commit()
+}) 
