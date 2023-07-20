@@ -32,6 +32,8 @@ async function _purgeGhostUsers(nextPageToken) {
     )
     await batch.commit()
 
+    console.log(`Purged ${usersToDelete.length} ghost users.`)
+
     if (pageToken)
         await _purgeGhostUsers(pageToken)
 }
@@ -41,6 +43,7 @@ export const purgeTriggerlessScripts = onSchedule("every day 00:00", async () =>
 
     const scriptsSnapshot = await db.collection(SCRIPT_COLLECTION).get()
     const batch = db.batch()
+    let count = 0
 
     await Promise.all(
         scriptsSnapshot.docs.map(async scriptDoc => {
@@ -58,8 +61,11 @@ export const purgeTriggerlessScripts = onSchedule("every day 00:00", async () =>
                 return
 
             batch.delete(scriptDoc.ref)
+            count++
         })
     )
+
+    console.log(`Purged ${count} triggerless scripts.`)
 
     await batch.commit()
 }) 

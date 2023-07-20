@@ -2,13 +2,14 @@ import { Button, Center, Group, Stack, Table, Tabs, Text, Tooltip } from "@manti
 import { modals } from "@mantine/modals"
 import { Prism } from "@mantine/prism"
 import MonacoEditor from "@monaco-editor/react"
-import { useScript, useSetStorageFileContent } from "@web/modules/firebase"
+import { fire, useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useEffect, useState } from "react"
 import { TbBrandNpm, TbCodeDots, TbPackages, TbRun } from "react-icons/tb"
 import { COST_PER_RUN, SOURCE_FILE_PATH } from "shared"
 import LogsSection from "./LogsSection"
 import BetterScroll from "./BetterScroll"
+import { logEvent } from "firebase/analytics"
 
 
 const dependencies = {
@@ -41,6 +42,10 @@ export default function CodeSection() {
     const save = async () => {
         await _save()
         setCodeDirty(false)
+
+        logEvent(fire.analytics, "save_script", { scriptId: script?.id })
+        if (script?.sourceCode == null)
+            logEvent(fire.analytics, "save_script_first_time", { scriptId: script?.id })
     }
 
     const discard = () => {

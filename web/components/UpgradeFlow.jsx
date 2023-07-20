@@ -148,7 +148,7 @@ function UpgradeSubscriptionStep({ nextStep }) {
                 setupIntent: router.query.setup_intent,
                 paymentMethod: router.query.payment_method,
             })
-            logEvent(fire.analytics, "upgrade_subscription", { scriptId, plan })
+            logEvent(fire.analytics, "upgrade_plan", { scriptId, plan })
         },
         enabled: !!scriptId &&
             !!(router.query.setup_intent || router.query.payment_method),

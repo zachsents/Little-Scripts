@@ -10,6 +10,7 @@ import { fire, useScript } from "./firebase"
 import { useMainStore } from "./store"
 import { useQueryWithPayload } from "./util"
 import { INTERVAL_UNITS } from "./util/scheduling"
+import { logEvent } from "firebase/analytics"
 
 
 export const TriggerInfo = {
@@ -32,6 +33,7 @@ export const TriggerInfo = {
                     })
 
                     console.debug("Script run created:", newDocRef.id)
+                    logEvent(fire.analytics, "run_script_manually", { scriptId: trigger.script.id })
 
                     return new Promise(resolve => {
                         const unsubscribe = onSnapshot(newDocRef, snapshot => {
