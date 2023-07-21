@@ -7,11 +7,13 @@ import fetch from "node-fetch"
 import { PubSub } from "@google-cloud/pubsub"
 import { FirestoreDataConverter } from "@zachsents/firestore-data-converter"
 import "dotenv/config"
+import { glob } from "glob"
 
 
 // Constants
 const PORT = 5050
-const USER_SCRIPT_PATH = "/home/ls-user/script/index.js"
+const USER_SCRIPT_DIR = "/home/ls-user/script"
+const USER_SCRIPT_INDEX_FILE = path.join(USER_SCRIPT_DIR, "index.js")
 const FINISH_SCRIPT_RUN_TOPIC = "finish-script-run"
 
 // PubSub setup
@@ -47,16 +49,18 @@ app.post("/", async (req, res) => {
     console.debug(messageContent)
 
     const sourceCode = await fetch(sourceDownloadUrl).then(res => res.text())
-    await fs.writeFile(USER_SCRIPT_PATH, sourceCode)
+    await fs.writeFile(USER_SCRIPT_INDEX_FILE, sourceCode)
 
     await fs.writeFile(
-        path.join(USER_SCRIPT_PATH, "../triggerData.js"),
+        path.join(USER_SCRIPT_DIR, "triggerData.js"),
         `export default ${JSON.stringify(triggerData)}`
     )
 
+    const logs = `Script running at ${new Date().toISOString()}\n\n`
+
     const result = await new Promise(resolve => {
         exec("node .", {
-            cwd: path.dirname(USER_SCRIPT_PATH),
+            cwd: USER_SCRIPT_DIR,
             uid: 1001,
             gid: 1001,
             env: {
@@ -69,11 +73,26 @@ app.post("/", async (req, res) => {
 
     await fetch(logUploadUrl, {
         method: "PUT",
-        body: `Script running at ${new Date().toISOString()}\n\n${result.stdout}`,
+        body: logs + result.stdout,
         headers: {
             "Content-Type": "text/plain",
         },
     })
+
+    const responses = {}
+
+    const responseFiles = await glob("*.response.json", {
+        cwd: USER_SCRIPT_DIR,
+        absolute: true,
+    })
+
+    await Promise.all(
+        responseFiles.map(async responseFile => {
+            const content = JSON.parse(await fs.readFile(responseFile, "utf-8"))
+            const key = path.basename(responseFile, ".response.json")
+            responses[key] = content
+        })
+    )
 
     const finishMessage = result.error ? {
         scriptRunId,
@@ -83,6 +102,7 @@ app.post("/", async (req, res) => {
     } : {
         scriptRunId,
         status: "COMPLETED",
+        responses,
     }
 
     await pubsub.topic(FINISH_SCRIPT_RUN_TOPIC).publishMessage({

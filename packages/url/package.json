@@ -1,0 +1,13 @@
+{
+    "name": "@littlescript/url",
+    "version": "1.0.2",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "deploy": "npm publish --access=public"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module"
+}

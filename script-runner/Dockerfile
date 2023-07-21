@@ -17,9 +17,9 @@ RUN chown -R ls-user:ls-user .
 USER ls-user
 RUN npm install
 
-# Now change back and remove write permissions
+# Now change back and set permissions
 USER root
-RUN chmod -R 500 .
+RUN chmod -R 755 .
 
 # Copy server files
 WORKDIR /server

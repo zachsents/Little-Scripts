@@ -18,14 +18,18 @@ export const onRequestSyncUrlTrigger = onRequest({
 
     const scriptRunRef = await beginUrlTrigger(req)
 
-    await new Promise(resolve => {
+    const { statusCode, body } = await new Promise(resolve => {
         scriptRunRef.onSnapshot(snapshot => {
-            if (isStatusFinished(snapshot.data().status))
-                resolve()
+            const data = snapshot.data()
+            if (isStatusFinished(data.status))
+                resolve(data.responses.url ?? {
+                    statusCode: 204,
+                    body: undefined,
+                })
         })
     })
 
-    res.status(204).send()
+    res.status(statusCode).send(body)
 })
 
 
