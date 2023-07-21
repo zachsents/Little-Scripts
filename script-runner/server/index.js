@@ -59,7 +59,9 @@ app.post("/", async (req, res) => {
             cwd: path.dirname(USER_SCRIPT_PATH),
             uid: 1001,
             gid: 1001,
-            env: {},
+            env: {
+                SCRIPT_RUN_ID: scriptRunId,
+            },
         }, (error, stdout, stderr) => {
             resolve({ error, stdout, stderr })
         })
