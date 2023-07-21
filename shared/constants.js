@@ -64,7 +64,11 @@ export const STARTER_CODE = `/**
  *  3. If you're using ChatGPT to code, click "I'm using ChatGPT" for help with prompting.
  */
 
-import fetch from "node-fetch"`
+import fetch from "node-fetch"
+
+const hello = await fetch("https://littlescript.io/hello-littlescript.txt").then(res => res.text())
+console.log(hello)
+`
 
 
 // ===== Stripe =====
