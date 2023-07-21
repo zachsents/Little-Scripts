@@ -35,18 +35,12 @@ app.use(morgan("short"))
 
 app.post("/", async (req, res) => {
 
-    const encodedMessage = req.body?.message?.data
-
-    if (!encodedMessage)
-        return res.status(400).send("Bad Request: Missing PubSub payload")
+    // console.debug("Recevied request\nHeaders:", req.headers, "\nBody:", req.body)
+    console.debug("Recevied request", req.body)
 
     /** @type {ScriptRunRequestBody} */
-    const messageContent = JSON.parse(
-        Buffer.from(encodedMessage, "base64").toString().trim()
-    )
-    const { scriptRunId, sourceDownloadUrl, logUploadUrl, triggerData } = messageContent
-
-    console.debug(messageContent)
+    const requestBody = req.body?.data
+    const { scriptRunId, sourceDownloadUrl, logUploadUrl, triggerData } = requestBody
 
     const sourceCode = await fetch(sourceDownloadUrl).then(res => res.text())
     await fs.writeFile(USER_SCRIPT_INDEX_FILE, sourceCode)

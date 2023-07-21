@@ -14,6 +14,10 @@ export const COST_PER_RUN = 0.01
 export const SIGNED_URL_EXPIRATION = 15 * 60 * 1000 // 15 minutes
 export const SCRIPT_RUN_LOAD_LIMIT = 100
 
+export const RUN_SCRIPT_QUEUE = "run-script-queue"
+export const SCRIPT_RUNNER_URL = "https://script-runner-r5i5bvmuaa-uc.a.run.app"
+export const FINISH_SCRIPT_RUN_TOPIC = "finish-script-run"
+
 
 // ===== Scripts =====
 

@@ -5,9 +5,9 @@ import { HttpsError, onCall } from "firebase-functions/v2/https"
 import { onMessagePublished } from "firebase-functions/v2/pubsub"
 import { onTaskDispatched } from "firebase-functions/v2/tasks"
 import { Stripe } from "stripe"
-import { db, functions, pubsub, storage, stripeKey } from "./init.js"
+import { db, functions, storage, stripeKey } from "./init.js"
 
-import { LOG_FILE_PATH, MAX_FREE_RUNS, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STARTER_CODE, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
+import { FINISH_SCRIPT_RUN_TOPIC, LOG_FILE_PATH, MAX_FREE_RUNS, RUN_SCRIPT_QUEUE, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUNNER_URL, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STARTER_CODE, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import { getStripeCustomerId, getSubscriptionForScript, getUsageForScript } from "./stripe.js"
 import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
 
@@ -99,13 +99,13 @@ export const onScriptRunWritten = onDocumentWritten({
             contentType: "text/plain",
         })
 
-        await pubsub.topic("run-script").publishMessage({
-            json: {
-                scriptRunId: event.data.after.id,
-                sourceDownloadUrl,
-                logUploadUrl,
-                triggerData: scriptRun.triggerData ?? {},
-            }
+        await functions.taskQueue(RUN_SCRIPT_QUEUE).enqueue({
+            scriptRunId: event.data.after.id,
+            sourceDownloadUrl,
+            logUploadUrl,
+            triggerData: scriptRun.triggerData ?? {},
+        }, {
+            uri: SCRIPT_RUNNER_URL,
         })
     }
 
@@ -199,7 +199,7 @@ export const onTriggerWrite = onDocumentWritten(`${TRIGGER_COLLECTION}/{triggerI
 })
 
 
-export const onScriptRunFinished = onMessagePublished("finish-script-run", async event => {
+export const onScriptRunFinished = onMessagePublished(FINISH_SCRIPT_RUN_TOPIC, async event => {
 
     const { scriptRunId, status, ...data } = event.data.message.json
     const scriptRunRef = db.collection(SCRIPT_RUN_COLLECTION).doc(scriptRunId)
