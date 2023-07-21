@@ -52,8 +52,8 @@ app.post("/", async (req, res) => {
     await fs.writeFile(USER_SCRIPT_INDEX_FILE, sourceCode)
 
     await fs.writeFile(
-        path.join(USER_SCRIPT_DIR, "triggerData.js"),
-        `export default ${JSON.stringify(triggerData)}`
+        path.join(USER_SCRIPT_DIR, "triggerData.json"),
+        JSON.stringify(triggerData)
     )
 
     const logs = `Script running at ${new Date().toISOString()}\n\n`

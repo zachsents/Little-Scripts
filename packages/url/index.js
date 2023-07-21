@@ -1,5 +1,11 @@
 import fs from "fs"
+import path from "path"
 
+const triggerData = JSON.parse(
+    fs.readFileSync(path.join(process.env.PWD, "triggerData.json"), "utf-8")
+)
+
+export const Request = triggerData.request
 
 export class Response {
 
@@ -33,6 +39,6 @@ export class Response {
             throw new Error(`Response must be serializable to JSON. Invalid response: ${response}`)
         }
 
-        fs.writeFileSync("./url.response.json", fileContent)
+        fs.writeFileSync(path.join(process.env.PWD, "url.response.json"), fileContent)
     }
 }
