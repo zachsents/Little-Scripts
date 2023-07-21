@@ -7,7 +7,7 @@ import { onTaskDispatched } from "firebase-functions/v2/tasks"
 import { Stripe } from "stripe"
 import { db, functions, pubsub, storage, stripeKey } from "./init.js"
 
-import { LOG_FILE_PATH, MAX_FREE_RUNS, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
+import { LOG_FILE_PATH, MAX_FREE_RUNS, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STARTER_CODE, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import { getStripeCustomerId, getSubscriptionForScript, getUsageForScript } from "./stripe.js"
 import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
 
@@ -256,6 +256,8 @@ export const onRequestCreateScript = onCall({
         createdAt: FieldValue.serverTimestamp(),
         owner: req.auth.uid,
     })
+
+    await storage.bucket().file(SOURCE_FILE_PATH(scriptDocRef.id)).save(STARTER_CODE)
 
     return {
         scriptId: scriptDocRef.id,

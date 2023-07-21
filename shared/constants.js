@@ -53,6 +53,19 @@ export const SYNC_TRIGGER_URL = process.env.NODE_ENV === "production" ?
     `${BASE_URL}/trigger/sync-url?t=` :
     `${FUNCTIONS_URL("onRequestSyncUrlTrigger")}?t=`
 
+export const STARTER_CODE = `/**
+ * Welcome to your Script!
+ * 
+ * Scripts are single-file JavaScript modules. 
+ * 
+ * A few things:
+ *  1. For imports, you must use ES modules (import), not CommonJS (require).
+ *  2. Dependencies are limited to a set of common packages. Click the "Dependencies" tab to view them.
+ *  3. If you're using ChatGPT to code, click "I'm using ChatGPT" for help with prompting.
+ */
+
+import fetch from "node-fetch"`
+
 
 // ===== Stripe =====
 
