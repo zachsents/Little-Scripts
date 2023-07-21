@@ -2,7 +2,7 @@ import { collection, doc, limit, orderBy, query, where } from "firebase/firestor
 import { useRouter } from "next/router"
 import { createContext, useContext, useEffect } from "react"
 import { useFirestoreCollectionData, useFirestoreDocData } from "reactfire"
-import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SOURCE_FILE_PATH, TRIGGER_COLLECTION } from "shared"
+import { SCRIPT_COLLECTION, SCRIPT_RUN_COLLECTION, SCRIPT_RUN_LOAD_LIMIT, SOURCE_FILE_PATH, TRIGGER_COLLECTION } from "shared"
 import { fire, useStorageFileContent } from "."
 import { useScriptIdFromRouter } from "../util"
 import { useScriptUsage, useSubscription } from "../stripe"
@@ -43,7 +43,7 @@ export function ScriptProvider({ children }) {
         collection(fire.db, SCRIPT_RUN_COLLECTION),
         where("script", "==", scriptDocRef),
         orderBy("startedAt", "desc"),
-        limit(100),
+        limit(SCRIPT_RUN_LOAD_LIMIT),
     ), {
         idField: "id",
     })

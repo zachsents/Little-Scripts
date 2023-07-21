@@ -1,15 +1,21 @@
-import { ActionIcon, Button, Center, Divider, Group, Loader, Popover, Stack, Tabs, Text, Tooltip } from "@mantine/core"
+import { ActionIcon, Button, Center, Divider, Group, Loader, Popover, SegmentedControl, Stack, Tabs, Text, Tooltip } from "@mantine/core"
+import { useLocalStorage } from "@mantine/hooks"
 import { useScript, useStorageFileContent } from "@web/modules/firebase"
 import classNames from "classnames"
 import { useEffect, useMemo, useState } from "react"
-import { TbAlertCircle, TbCheck, TbFileText, TbLoader } from "react-icons/tb"
-import { LOG_FILE_PATH, RUN_STATUS } from "shared"
+import { TbAlertCircle, TbCheck, TbFileText, TbLayoutGrid, TbList, TbLoader } from "react-icons/tb"
+import { LOG_FILE_PATH, RUN_STATUS, SCRIPT_RUN_LOAD_LIMIT, isStatusFinished } from "shared"
 import BetterScroll from "./BetterScroll"
 
 
 export default function LogsSection() {
 
     const { script } = useScript()
+
+    const [runViewerMode, setRunViewerMode] = useLocalStorage({
+        key: "runViewerMode",
+        defaultValue: "tile",
+    })
 
     const [selectedRunId, setSelectedRunId] = useState()
     const selectedRun = script?.runs?.find(run => run.id == selectedRunId)
@@ -77,10 +83,31 @@ export default function LogsSection() {
                             </Popover.Target>
                             <Popover.Dropdown px={0} h="24rem">
                                 <BetterScroll>
-                                    <TileRunViewer
-                                        value={selectedRunId}
-                                        onChange={setSelectedRunId}
-                                    />
+                                    <Stack spacing="xs" px="md">
+                                        <Group position="apart" noWrap>
+                                            <Text>Runs</Text>
+                                            <RunViewerModeSelector
+                                                value={runViewerMode}
+                                                onChange={setRunViewerMode}
+                                            />
+                                        </Group>
+
+                                        <RunViewer
+                                            value={selectedRunId}
+                                            onChange={setSelectedRunId}
+                                            mode={runViewerMode}
+                                        />
+
+                                        {script?.runs?.length == 0 &&
+                                            <Text ta="center" color="dimmed" size="xs">
+                                                No runs
+                                            </Text>}
+
+                                        {script?.runs?.length == SCRIPT_RUN_LOAD_LIMIT &&
+                                            <Text ta="center" color="dimmed" size="xs">
+                                                Only the last {SCRIPT_RUN_LOAD_LIMIT} runs are shown
+                                            </Text>}
+                                    </Stack>
                                 </BetterScroll>
                             </Popover.Dropdown>
                         </Popover>}
@@ -134,7 +161,39 @@ export default function LogsSection() {
 }
 
 
-function TileRunViewer({ value, onChange }) {
+function RunViewerModeSelector({ value, onChange }) {
+
+    return (
+        <SegmentedControl
+            value={value}
+            onChange={onChange}
+            classNames={{
+                label: "p-0"
+            }}
+            data={[
+                {
+                    value: "list",
+                    label: <Tooltip label="List View" withinPortal>
+                        <Center px="xs" py="xxxs">
+                            <TbList />
+                        </Center>
+                    </Tooltip>,
+                },
+                {
+                    value: "tile",
+                    label: <Tooltip label="Tile View" withinPortal>
+                        <Center px="xs" py="xxxs">
+                            <TbLayoutGrid />
+                        </Center>
+                    </Tooltip>,
+                },
+            ]}
+        />
+    )
+}
+
+
+function RunViewer({ value, onChange, mode }) {
 
     const { script } = useScript()
 
@@ -160,33 +219,36 @@ function TileRunViewer({ value, onChange }) {
     }, [script?.runs])
 
     return (
-        <Stack spacing="xl" px="md">
+        <Stack spacing="xl">
             {runGroups.map(group =>
                 <Stack spacing="xs" key={group.date}>
                     <Divider label={group.date} />
 
-                    <Group spacing="xs">
-                        {group.runs.map(run =>
-                            <RunTile
-                                run={run}
-                                selected={value == run.id}
-                                onSelect={() => onChange?.(run.id)}
-                                key={run.id}
-                            />
-                        )}
-                    </Group>
+                    {mode === "list" &&
+                        <Stack spacing={0}>
+                            {group.runs.map(run =>
+                                <RunRow
+                                    run={run}
+                                    selected={value == run.id}
+                                    onSelect={() => onChange?.(run.id)}
+                                    key={run.id}
+                                />
+                            )}
+                        </Stack>}
+
+                    {mode === "tile" &&
+                        <Group spacing="xs">
+                            {group.runs.map(run =>
+                                <RunTile
+                                    run={run}
+                                    selected={value == run.id}
+                                    onSelect={() => onChange?.(run.id)}
+                                    key={run.id}
+                                />
+                            )}
+                        </Group>}
                 </Stack>
             )}
-
-            {runGroups.length == 0 &&
-                <Text ta="center" color="dimmed" size="xs">
-                    No runs
-                </Text>}
-
-            {script?.runs?.length == 100 &&
-                <Text ta="center" color="dimmed" size="xs">
-                    Only the last 100 runs are shown
-                </Text>}
         </Stack>
     )
 }
@@ -209,11 +271,79 @@ function RunTile({ run, onSelect, selected }) {
 
     const Icon = statusIcons[run.status]
 
-    const duration = run.status == RUN_STATUS.COMPLETED && ((run.completedAt || run.failedAt).toDate() - run.startedAt.toDate()) / 1000
+    return (
+        <RunTooltip
+            run={run} selected={selected}
+            withArrow
+        >
+            <ActionIcon
+                variant="filled" color={statusColors[run.status]} radius="sm" size="lg"
+                className={classNames({
+                    "aspect-square text-xl group": true,
+                    "!outline !outline-4 !outline-yellow outline-offset-2": selected,
+                })}
+                onClick={onSelect}
+            >
+                <Center className="text-white opacity-60 group-hover:opacity-100">
+                    <Icon />
+                </Center>
+            </ActionIcon>
+        </RunTooltip>
+    )
+}
+
+
+function RunRow({ run, onSelect, selected }) {
+
+    const Icon = statusIcons[run.status]
+
+    const label = run.startedAt.toDate().toLocaleString(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short",
+    })
+
+    return (
+        <RunTooltip
+            run={run} selected={selected}
+            position="left" withArrow
+        >
+            <Group
+                noWrap
+                className={classNames({
+                    "cursor-pointer hover:bg-gray-100 px-md py-xs rounded": true,
+                    "outline outline-2 outline-yellow z-10": selected,
+                })}
+                onClick={onSelect}
+            >
+                <Center c={statusColors[run.status]} className="text-xl">
+                    <Icon />
+                </Center>
+                <Text size="sm">
+                    {label}
+                </Text>
+            </Group>
+            {/* <Button
+                variant="subtle" color="gray" radius="sm" fullWidth
+                className={classNames({
+                    "font-normal": true,
+                    "!outline !outline-4 !outline-yellow outline-offset-2": selected,
+                })}
+                onClick={onSelect}
+            >
+                {label}
+            </Button> */}
+        </RunTooltip>
+    )
+}
+
+
+function RunTooltip({ run, selected, children, ...props }) {
+
+    const duration = isStatusFinished(run.status) && ((run.completedAt || run.failedAt).toDate() - run.startedAt.toDate()) / 1000
 
     return (
         <Tooltip
-            withinPortal multiline
+            withinPortal multiline {...props}
             label={<Stack miw="10rem" spacing={0}>
                 <Group noWrap position="apart">
                     <Text color="dimmed">Status</Text>
@@ -244,23 +374,17 @@ function RunTile({ run, onSelect, selected }) {
                             {duration.toFixed(2)} seconds
                         </Text>
                     </Group>}
-                <Text color="dimmed" ta="center">
-                    Click to select
-                </Text>
+
+                {selected ?
+                    <Text color="yellow" ta="center">
+                        Selected
+                    </Text> :
+                    <Text color="dimmed" ta="center">
+                        Click to select
+                    </Text>}
             </Stack>}
         >
-            <ActionIcon
-                variant="filled" color={statusColors[run.status]} radius="sm" size="lg"
-                className={classNames({
-                    "aspect-square text-xl group": true,
-                    "!outline !outline-4 !outline-yellow outline-offset-2": selected,
-                })}
-                onClick={onSelect}
-            >
-                <Center className="text-white opacity-60 group-hover:opacity-100">
-                    <Icon />
-                </Center>
-            </ActionIcon>
+            {children}
         </Tooltip>
     )
 }

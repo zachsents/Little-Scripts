@@ -12,6 +12,7 @@ export const FUNCTIONS_URL = process.env.NODE_ENV === "production" ?
 export const MAX_FREE_RUNS = 100
 export const COST_PER_RUN = 0.01
 export const SIGNED_URL_EXPIRATION = 15 * 60 * 1000 // 15 minutes
+export const SCRIPT_RUN_LOAD_LIMIT = 100
 
 
 // ===== Scripts =====
