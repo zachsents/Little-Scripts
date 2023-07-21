@@ -2,7 +2,8 @@ import { Button, CopyButton, Stack } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import ConfigButtons from "@web/components/ConfigButtons"
 import ScheduleBuilder from "@web/components/ScheduleBuilder"
-import { addDoc, collection, doc, onSnapshot, updateDoc } from "firebase/firestore"
+import { logEvent } from "firebase/analytics"
+import { addDoc, collection, doc, onSnapshot, serverTimestamp, updateDoc } from "firebase/firestore"
 import { TbCheck, TbClock, TbCopy, TbHandClick, TbLink, TbRun, TbWebhook } from "react-icons/tb"
 import { useQuery } from "react-query"
 import { ASYNC_TRIGGER_URL, RUN_STATUS, SCRIPT_RUN_COLLECTION, SYNC_TRIGGER_URL, TRIGGER_COLLECTION, TRIGGER_TYPE, isStatusFinished } from "shared"
@@ -10,7 +11,6 @@ import { fire, useScript } from "./firebase"
 import { useMainStore } from "./store"
 import { useQueryWithPayload } from "./util"
 import { INTERVAL_UNITS } from "./util/scheduling"
-import { logEvent } from "firebase/analytics"
 
 
 export const TriggerInfo = {
@@ -30,6 +30,7 @@ export const TriggerInfo = {
                         script: trigger.script,
                         trigger: doc(fire.db, TRIGGER_COLLECTION, trigger.id),
                         status: RUN_STATUS.PENDING,
+                        queuedAt: serverTimestamp(),
                     })
 
                     console.debug("Script run created:", newDocRef.id)

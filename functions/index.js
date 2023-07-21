@@ -20,6 +20,7 @@ import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/schedu
  * @property {import("firebase-admin/firestore").DocumentReference} trigger
  * @property {object} triggerData Data passed into the script run from the trigger
  *
+ * @property {import("firebase-admin/firestore").Timestamp} queuedAt
  * @property {import("firebase-admin/firestore").Timestamp} startedAt
  * @property {import("firebase-admin/firestore").Timestamp} scheduledAt
  * @property {import("firebase-admin/firestore").Timestamp} completedAt
@@ -136,6 +137,7 @@ export const runScheduledScript = onTaskDispatched(async ({ data }) => {
 
     await scriptRunRef.update({
         status: RUN_STATUS.PENDING,
+        queuedAt: FieldValue.serverTimestamp(),
     })
 
     /** @type {Trigger} */

@@ -1,6 +1,7 @@
+import { FieldValue } from "firebase-admin/firestore"
 import { onRequest } from "firebase-functions/v2/https"
-import { db } from "./init.js"
 import { RUN_STATUS, SCRIPT_RUN_COLLECTION, TRIGGER_COLLECTION, isStatusFinished } from "shared"
+import { db } from "./init.js"
 
 
 export const onRequestAsyncUrlTrigger = onRequest({
@@ -39,6 +40,7 @@ async function beginUrlTrigger(req) {
         script: trigger.script,
         trigger: triggerRef,
         status: RUN_STATUS.PENDING,
+        queuedAt: FieldValue.serverTimestamp(),
         triggerData: {
             request: {
                 method: req.method,
