@@ -1,4 +1,5 @@
-import { Group } from "@mantine/core"
+import { Button, Group } from "@mantine/core"
+import { TbHeart } from "react-icons/tb"
 import Brand from "./Brand"
 import NavLink from "./NavLink"
 import ScriptListPopover from "./ScriptListPopover"
@@ -21,6 +22,12 @@ export default function CreateHeader() {
                 </Group>
 
                 <Group mr="xl">
+                    <Button
+                        component="a" href="https://forms.gle/ZFsNpxXLxjkDQ3J4A" target="_blank"
+                        leftIcon={<TbHeart />}
+                    >
+                        Leave Feedback
+                    </Button>
                     <ScriptListPopover>
                         <NavLink>
                             My Scripts
