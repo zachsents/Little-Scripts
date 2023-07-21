@@ -1,11 +1,11 @@
-import { Button, Center, Group, Stack, Table, Tabs, Text, Tooltip } from "@mantine/core"
+import { Blockquote, Button, Center, CopyButton, Group, Stack, Table, Tabs, Text, Tooltip } from "@mantine/core"
 import { modals } from "@mantine/modals"
 import { Prism } from "@mantine/prism"
 import MonacoEditor from "@monaco-editor/react"
 import { fire, useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useEffect, useState } from "react"
-import { TbBrandNpm, TbCodeDots, TbPackages, TbRun } from "react-icons/tb"
+import { TbBrandNpm, TbBrandOpenai, TbCheck, TbCodeDots, TbCopy, TbPackages, TbRun, TbUser } from "react-icons/tb"
 import { COST_PER_RUN, SOURCE_FILE_PATH } from "shared"
 import LogsSection from "./LogsSection"
 import BetterScroll from "./BetterScroll"
@@ -21,6 +21,8 @@ const dependencies = {
     "puppeteer": "^20.8.1",
     "xvfb": "^0.4.0"
 }
+
+const chatGPTMessage = `Write the code in plain JavaScript with ES2020 syntax and using ES modules. If needed, only use these dependencies: ${Object.keys(dependencies).join(", ")}.`
 
 
 export default function CodeSection() {
@@ -62,6 +64,27 @@ export default function CodeSection() {
         onConfirm: discard,
     })
 
+    const openChatGPTInfo = () => modals.open({
+        title: "Coding with ChatGPT",
+        children: <Stack spacing="xs">
+            <Text color="dimmed">To generate the right code, add this to your prompt so ChatGPT:</Text>
+            <Blockquote icon={<TbUser />} className="bg-gray-50 rounded font-mono text-sm">
+                {chatGPTMessage}
+            </Blockquote>
+            <Group position="right">
+                <CopyButton value={chatGPTMessage}>
+                    {({ copied, copy }) => (
+                        <Button leftIcon={copied ? <TbCheck /> : <TbCopy />} onClick={() => {
+                            copy()
+                            setTimeout(modals.closeAll, 500)
+                        }}>
+                            {copied ? "Copied!" : "Copy"}
+                        </Button>
+                    )}
+                </CopyButton>
+            </Group>
+        </Stack>
+    })
 
     return (
         <Tabs
@@ -73,10 +96,23 @@ export default function CodeSection() {
             }}
         >
             <Tabs.List>
-                <Group spacing={0}>
-                    <Tabs.Tab value="code" icon={<TbCodeDots />}>Code</Tabs.Tab>
-                    <Tabs.Tab value="logs" icon={<TbRun />}>Runs</Tabs.Tab>
-                    <Tabs.Tab value="dependencies" icon={<TbPackages />}>Dependencies</Tabs.Tab>
+                <Group spacing="xl">
+                    <Group spacing={0}>
+                        <Tabs.Tab value="code" icon={<TbCodeDots />}>Code</Tabs.Tab>
+                        <Tabs.Tab value="logs" icon={<TbRun />}>Runs</Tabs.Tab>
+                        <Tabs.Tab value="dependencies" icon={<TbPackages />}>Dependencies</Tabs.Tab>
+                    </Group>
+
+                    <Group>
+                        <Button
+                            variant="subtle" compact color="gray"
+                            className="font-normal"
+                            leftIcon={<TbBrandOpenai />}
+                            onClick={openChatGPTInfo}
+                        >
+                            I&apos;m using ChatGPT
+                        </Button>
+                    </Group>
                 </Group>
 
                 <Group spacing="xl">
