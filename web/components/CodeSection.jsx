@@ -4,12 +4,12 @@ import { Prism } from "@mantine/prism"
 import MonacoEditor from "@monaco-editor/react"
 import { fire, useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
+import { logEvent } from "firebase/analytics"
 import { useEffect, useState } from "react"
 import { TbBrandNpm, TbBrandOpenai, TbCheck, TbCodeDots, TbCopy, TbPackages, TbRun, TbUser } from "react-icons/tb"
 import { COST_PER_RUN, SOURCE_FILE_PATH } from "shared"
-import LogsSection from "./LogsSection"
 import BetterScroll from "./BetterScroll"
-import { logEvent } from "firebase/analytics"
+import LogsSection from "./LogsSection"
 
 
 const dependencies = {
@@ -159,6 +159,30 @@ export default function CodeSection() {
                         onChange={newCode => {
                             setWorkingCode(newCode)
                             setCodeDirty()
+                        }}
+                        onMount={(editor, monaco) => {
+                            editor.addAction({
+                                id: "saveCode",
+                                label: "Save Code",
+                                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS],
+                                contextMenuGroupId: "2_lscontrols",
+                                contextMenuOrder: 1,
+                                run: () => {
+                                    save()
+                                    console.debug("Saving code from Monaco action")
+                                },
+                            })
+
+                            editor.addAction({
+                                id: "discardCodeChanges",
+                                label: "Discard Changes",
+                                keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyD],
+                                contextMenuGroupId: "2_lscontrols",
+                                contextMenuOrder: 2,
+                                run: () => {
+                                    confirmDiscard()
+                                },
+                            })
                         }}
                     />
                 </div>
