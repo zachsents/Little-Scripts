@@ -28,19 +28,19 @@ app.use(morgan("short"))
 /**
  * @typedef {object} ScriptRunRequestBody
  * 
- * @property {string} scriptRunId The ID of the script run. Used to store the script's output and the run's status.
  * @property {string} sourceDownloadUrl The URL to download the script's source code from.
  * @property {string} logUploadUrl The URL to upload the script's logs to.
  */
 
-app.post("/", async (req, res) => {
+app.post("/:scriptRunId", async (req, res) => {
 
     // console.debug("Recevied request\nHeaders:", req.headers, "\nBody:", req.body)
-    console.debug("Recevied request", req.body)
+    console.debug(`Recevied script run request: ${req.params.scriptRunId},`, req.body)
+    const scriptRunId = req.params.scriptRunId
 
     /** @type {ScriptRunRequestBody} */
     const requestBody = req.body?.data
-    const { scriptRunId, sourceDownloadUrl, logUploadUrl, triggerData } = requestBody
+    const { sourceDownloadUrl, logUploadUrl, triggerData } = requestBody
 
     const sourceCode = await fetch(sourceDownloadUrl).then(res => res.text())
     await fs.writeFile(USER_SCRIPT_INDEX_FILE, sourceCode)

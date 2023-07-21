@@ -100,12 +100,11 @@ export const onScriptRunWritten = onDocumentWritten({
         })
 
         await functions.taskQueue(RUN_SCRIPT_QUEUE).enqueue({
-            scriptRunId: event.data.after.id,
             sourceDownloadUrl,
             logUploadUrl,
             triggerData: scriptRun.triggerData ?? {},
         }, {
-            uri: SCRIPT_RUNNER_URL,
+            uri: `${SCRIPT_RUNNER_URL}/${event.data.after.id}`,
         })
     }
 
