@@ -3,10 +3,10 @@ import { useQuery } from "react-query"
 import { fire } from "."
 
 
-export function useStorageFileContent(path) {
+export function useStorageFileContent(path, key = []) {
 
     const query = useQuery({
-        queryKey: ["get-storage-file-content", path],
+        queryKey: ["get-storage-file-content", path, ...key],
         queryFn: async () => {
             try {
                 const blob = await getBlob(ref(fire.storage, path))

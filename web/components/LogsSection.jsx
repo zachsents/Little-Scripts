@@ -26,7 +26,7 @@ export default function LogsSection() {
         console.debug("Selected run:", selectedRunId)
     }, [selectedRunId])
 
-    const [logs, logsQuery] = useStorageFileContent(selectedRun && LOG_FILE_PATH(script.id, selectedRunId))
+    const [logs, logsQuery] = useStorageFileContent(selectedRun && LOG_FILE_PATH(script.id, selectedRunId), selectedRun?.status)
 
     const hasFailed = selectedRun?.status === RUN_STATUS.FAILED
 
