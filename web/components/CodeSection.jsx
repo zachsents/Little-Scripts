@@ -46,8 +46,6 @@ export default function CodeSection() {
         setCodeDirty(false)
 
         logEvent(fire.analytics, "save_script", { scriptId: script?.id })
-        if (script?.sourceCode == null)
-            logEvent(fire.analytics, "save_script_first_time", { scriptId: script?.id })
     }
 
     const discard = () => {

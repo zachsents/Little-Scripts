@@ -9,6 +9,7 @@ import { useQuery } from "react-query"
 import { TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import ConfigPanel from "./ConfigPanel"
 import TriggerConfigCard from "./TriggerConfigCard"
+import { logEvent } from "firebase/analytics"
 
 
 export default function TriggersConfig() {
@@ -83,6 +84,7 @@ function TriggerTypeButton({ type, onCreate }) {
             })
             setSelectedTrigger(newDocRef.id)
             onCreate?.()
+            logEvent(fire.analytics, "create_trigger", { type })
         },
         enabled: false,
     })
