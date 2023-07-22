@@ -17,6 +17,7 @@ export const SCRIPT_RUN_LOAD_LIMIT = 100
 export const RUN_SCRIPT_QUEUE = "run-script-queue"
 export const SCRIPT_RUNNER_URL = "https://script-runner-r5i5bvmuaa-uc.a.run.app"
 export const FINISH_SCRIPT_RUN_TOPIC = "finish-script-run"
+export const SCRIPT_RUNNER_ERROR_TOPIC = "script-runner-error"
 
 
 // ===== Scripts =====
@@ -74,6 +75,17 @@ import fetch from "node-fetch"
 const hello = await fetch("https://littlescript.io/hello-littlescript.txt").then(res => res.text())
 console.log(hello)
 `
+
+export const SERVICE_ERROR_REMAPS = [
+    {
+        includeText: "container instance was found to be using too much memory and was terminated",
+        remapTo: "Your script used too much memory. Try using less memory or optimizing your code.",
+    },
+    {
+        includeText: "reached the maximum request timeout",
+        remapTo: "Your script took too long to run.",
+    },
+]
 
 
 // ===== Stripe =====

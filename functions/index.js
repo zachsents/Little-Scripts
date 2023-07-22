@@ -7,7 +7,7 @@ import { onTaskDispatched } from "firebase-functions/v2/tasks"
 import { Stripe } from "stripe"
 import { db, functions, storage, stripeKey } from "./init.js"
 
-import { FINISH_SCRIPT_RUN_TOPIC, LOG_FILE_PATH, MAX_FREE_RUNS, RUN_SCRIPT_QUEUE, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUNNER_URL, SCRIPT_RUN_COLLECTION, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STARTER_CODE, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
+import { FINISH_SCRIPT_RUN_TOPIC, LOG_FILE_PATH, MAX_FREE_RUNS, RUN_SCRIPT_QUEUE, RUN_STATUS, SCRIPT_COLLECTION, SCRIPT_RUNNER_ERROR_TOPIC, SCRIPT_RUNNER_URL, SCRIPT_RUN_COLLECTION, SERVICE_ERROR_REMAPS, SIGNED_URL_EXPIRATION, SOURCE_FILE_PATH, STARTER_CODE, STRIPE_FREE_PRICE_ID, TRIGGER_COLLECTION, TRIGGER_TYPE } from "shared"
 import { getStripeCustomerId, getSubscriptionForScript, getUsageForScript } from "./stripe.js"
 import { getNextDateFromSchedule, getStartDateFromSchedule } from "./util/scheduling.js"
 
@@ -227,6 +227,27 @@ export const onScriptRunFinished = onMessagePublished(FINISH_SCRIPT_RUN_TOPIC, a
 
         return
     }
+})
+
+
+export const onScriptRunnerError = onMessagePublished(SCRIPT_RUNNER_ERROR_TOPIC, async event => {
+
+    const scriptRunId = new URL(event.data.message.json.httpRequest.requestUrl).pathname.slice(1)
+
+    let errorText = event.data.message.json.textPayload
+
+    logger.info(`Service Error caused script run to fail (${scriptRunId})\n"${errorText}"`)
+
+    const matchingRemap = SERVICE_ERROR_REMAPS.find(remap => errorText.includes(remap.includeText))
+    if (matchingRemap)
+        errorText = matchingRemap.remapTo
+
+    await db.collection(SCRIPT_RUN_COLLECTION).doc(scriptRunId).update({
+        status: RUN_STATUS.FAILED,
+        failedAt: FieldValue.serverTimestamp(),
+        failureReason: "Service error",
+        stderr: errorText,
+    })
 })
 
 
