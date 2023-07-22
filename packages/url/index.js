@@ -1,9 +1,15 @@
 import fs from "fs"
 import path from "path"
 
-const triggerData = JSON.parse(
-    fs.readFileSync(path.join(process.env.PWD, "triggerData.json"), "utf-8")
-)
+let triggerData
+try {
+    triggerData = JSON.parse(
+        fs.readFileSync(path.join(process.env.PWD, "triggerData.json"), "utf-8")
+    )
+}
+catch (err) {
+    triggerData = {}
+}
 
 export const Request = triggerData.request
 
