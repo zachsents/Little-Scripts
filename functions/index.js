@@ -319,6 +319,7 @@ export const onRequestDeleteScript = onCall({
 export * from "./purging.js"
 export * from "./stripe.js"
 export * from "./triggers.js"
+export * from "./reporting.js"
 
 
 export function ownsScript(uid, scriptId) {
