@@ -34,6 +34,7 @@ export default function CreateHeader() {
                         <div>
                             <Switch
                                 size="md"
+                                checked={colorScheme === "dark"}
                                 onChange={event => setColorScheme(event.currentTarget.checked ? "dark" : "light")}
                                 color="gray"
                                 onLabel={<TbMoonStars className="text-md text-blue" />}
