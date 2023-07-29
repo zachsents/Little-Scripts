@@ -152,7 +152,10 @@ export default function CodeSection() {
                         <Text size="xs" color="dimmed">All changes saved.</Text>}
                 </Group>
 
-                <div className="flex-1 dark:contrast-[1.1] dark:saturate-150">
+                <div
+                    className="flex-1"
+                // className="flex-1 dark:contrast-[1.1] dark:saturate-150"
+                >
                     <MonacoEditor
                         height="100%"
                         language="javascript"
