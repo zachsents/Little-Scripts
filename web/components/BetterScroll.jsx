@@ -5,7 +5,7 @@ export default function BetterScroll({ children }) {
     return (
         <div className="flex flex-col h-full">
             <ScrollArea.Autosize
-                className="grow basis-0 min-h-0"
+                className="grow basis-0 min-h-0 [&>div]:max-w-full"
                 offsetScrollbars
                 scrollbarSize={8}
                 classNames={{

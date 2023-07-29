@@ -59,7 +59,7 @@ function ScriptPageContent() {
     return isLoaded ?
         <Group noWrap className="grow px-md pb-md" spacing="xs" align="stretch">
             <ConfigSection />
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
                 <CodeSection />
             </div>
         </Group> :
