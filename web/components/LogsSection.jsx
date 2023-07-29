@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Center, Divider, Group, Loader, Popover, SegmentedControl, Stack, Tabs, Text, Tooltip } from "@mantine/core"
+import { ActionIcon, Button, Center, Divider, Group, Loader, Popover, SegmentedControl, Stack, Tabs, Text, Tooltip, useMantineTheme } from "@mantine/core"
 import { useLocalStorage } from "@mantine/hooks"
 import { useScript, useStorageFileContent } from "@web/modules/firebase"
 import classNames from "classnames"
@@ -42,8 +42,8 @@ export default function LogsSection() {
         <>
             <Tabs defaultValue="logs" variant="outline" classNames={{
                 root: "grow flex flex-col",
-                tabsList: "px-xs bg-gray-50 justify-between items-end",
-                tab: "data-[active=true]:bg-white",
+                tabsList: "px-xs bg-gray-50 dark:bg-dark justify-between items-end",
+                tab: "data-[active=true]:bg-white dark:data-[active=true]:bg-dark-700",
                 panel: "p-xs grow",
             }}>
                 <Tabs.List>
@@ -142,7 +142,7 @@ export default function LogsSection() {
                                 <BetterScroll>
                                     {hasFailed ?
                                         <div>
-                                            <p className="font-bold font-mono text-red-800 bg-gray-100 px-md py-xxs rounded">{selectedRun?.failureReason}</p>
+                                            <p className="font-bold font-mono text-red-800 bg-dimmed px-md py-xxs rounded">{selectedRun?.failureReason}</p>
 
                                             <pre className="text-sm text-red-800 whitespace-pre-wrap">
                                                 {selectedRun.stderr}
@@ -310,7 +310,7 @@ function RunRow({ run, onSelect, selected }) {
             <Group
                 noWrap
                 className={classNames({
-                    "cursor-pointer hover:bg-gray-100 px-md py-xs rounded": true,
+                    "cursor-pointer hover:bg-gray-100 dark:hover:bg-dark-500 px-md py-xs rounded": true,
                     "outline outline-2 outline-yellow z-10": selected,
                 })}
                 onClick={onSelect}
@@ -339,7 +339,11 @@ function RunRow({ run, onSelect, selected }) {
 
 function RunTooltip({ run, selected, children, ...props }) {
 
+    const theme = useMantineTheme()
+
     const duration = isStatusFinished(run.status) && ((run.completedAt || run.failedAt).toDate() - run.startedAt.toDate()) / 1000
+
+
 
     return (
         <Tooltip
@@ -347,7 +351,7 @@ function RunTooltip({ run, selected, children, ...props }) {
             label={<Stack miw="10rem" spacing={0}>
                 <Group noWrap position="apart">
                     <Text color="dimmed">Status</Text>
-                    <Text fw="bold" color={`${statusColors[run.status]}.3`}>
+                    <Text fw="bold" color={theme.fn.themeColor(statusColors[run.status], theme.colorScheme == "dark" ? 7 : 3)}>
                         {run.status}
                     </Text>
                 </Group>

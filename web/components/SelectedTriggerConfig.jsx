@@ -26,16 +26,16 @@ export default function SelectedTriggerConfig() {
             </Group>
         }>
             <Stack spacing="xl">
-                <Group noWrap className="bg-gray-100 rounded px-lg py-xs" position="apart">
+                <Group noWrap className="bg-dimmed rounded px-lg py-xs" position="apart">
                     <Group noWrap>
                         <triggerInfo.icon />
-                        <Text fw="bold" color={triggerInfo.color}>{triggerInfo.name}</Text>
+                        <Text fw="bold">{triggerInfo.name}</Text>
                     </Group>
 
                     <Tooltip label="Delete Trigger" withinPortal>
                         <ActionIcon
                             onClick={confirmDelete} loading={deleteQuery.isFetching}
-                            className="hover:bg-gray-200"
+                            className="hover:bg-gray-200 dark:hover:bg-dark-400"
                         >
                             <TbTrash />
                         </ActionIcon>

@@ -1,4 +1,4 @@
-import { ActionIcon, Center, Group, Loader, Menu, Modal, Stack, Tabs, Text, Title, Tooltip } from "@mantine/core"
+import { ActionIcon, Alert, Center, Group, Loader, Menu, Modal, Stack, Tabs, Text, Title, Tooltip } from "@mantine/core"
 import { useScript } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useSelectedTrigger } from "@web/modules/triggers"
@@ -39,53 +39,57 @@ export default function ConfigSection() {
             "w-[22rem] min-w-[22rem]": configTab != null,
         })}>
             {configTab == null ?
-                <Tooltip label="Expand Sidebar">
+                <Tooltip label="Expand Sidebar" position="right" withinPortal>
                     <Center
                         onClick={() => setConfigTab("triggers")}
-                        className="py-md text-xl bg-gray-100 hover:bg-gray-200 rounded-md text-dark-300 cursor-pointer"
+                        className="py-md text-xl rounded-md cursor-pointer bg-dimmed hover:bg-gray-200 dark:hover:bg-dark-400"
                     >
                         <TbLayoutSidebarLeftExpand />
                     </Center>
                 </Tooltip> :
-                <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart" noWrap>
-                    <Group noWrap>
-                        {isRenamingTitle ?
-                            <EditableText
-                                highlight
-                                initialValue={script?.name}
-                                onEdit={rename}
-                                onCancel={() => setIsRenamingTitle(false)}
-                                size="sm"
-                            /> :
-                            <Title order={3} lineClamp={1}>
-                                {script?.name}
-                            </Title>}
-                        <Menu shadow="sm">
-                            <Menu.Target>
-                                <ActionIcon
-                                    loading={deleteQuery.isFetching}
-                                    className="hover:bg-gray-200"
-                                >
-                                    <TbDots />
-                                </ActionIcon>
-                            </Menu.Target>
-                            <Menu.Dropdown>
-                                <Menu.Item icon={<TbPencil />} onClick={() => setIsRenamingTitle(true)}>
-                                    Rename Script
-                                </Menu.Item>
-                                <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
-                                    Delete Script
-                                </Menu.Item>
-                            </Menu.Dropdown>
-                        </Menu>
+                <Alert color="gray" className="rounded-lg px-lg py-xs">
+                    <Group position="apart" noWrap>
+                        <Group noWrap>
+                            {isRenamingTitle ?
+                                <EditableText
+                                    highlight
+                                    initialValue={script?.name}
+                                    onEdit={rename}
+                                    onCancel={() => setIsRenamingTitle(false)}
+                                    size="sm"
+                                /> :
+                                <Title order={3} lineClamp={1}>
+                                    {script?.name}
+                                </Title>}
+                            <Menu shadow="sm" withinPortal>
+                                <Menu.Target>
+                                    <ActionIcon
+                                        loading={deleteQuery.isFetching}
+                                        className="hover:bg-gray-100 dark:hover:bg-dark-400"
+                                    >
+                                        <TbDots />
+                                    </ActionIcon>
+                                </Menu.Target>
+                                <Menu.Dropdown>
+                                    <Menu.Item icon={<TbPencil />} onClick={() => setIsRenamingTitle(true)}>
+                                        Rename Script
+                                    </Menu.Item>
+                                    <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
+                                        Delete Script
+                                    </Menu.Item>
+                                </Menu.Dropdown>
+                            </Menu>
+                        </Group>
+                        <Tooltip label="Collpase Sidebar" withinPortal>
+                            <ActionIcon
+                                size="lg" onClick={() => setConfigTab(null)}
+                                className="-my-4 hover:bg-gray-100 dark:hover:bg-dark-400"
+                            >
+                                <TbLayoutSidebarLeftCollapse />
+                            </ActionIcon>
+                        </Tooltip>
                     </Group>
-
-                    <Tooltip label="Collpase Sidebar">
-                        <ActionIcon size="lg" className="-my-4" onClick={() => setConfigTab(null)}>
-                            <TbLayoutSidebarLeftCollapse />
-                        </ActionIcon>
-                    </Tooltip>
-                </Group>}
+                </Alert>}
 
             <Tabs
                 orientation="vertical" variant="pills" allowTabDeactivation

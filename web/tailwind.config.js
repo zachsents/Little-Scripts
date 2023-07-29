@@ -10,6 +10,7 @@ module.exports = {
     theme: {
         extend: tailwindTheme,
     },
+    darkMode: "class",
     plugins: [],
     corePlugins: {
         preflight: false,

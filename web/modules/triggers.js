@@ -132,7 +132,7 @@ export const TriggerInfo = {
                             </Button>
                         )}
                     </CopyButton>
-                    <pre className="bg-gray-50 text-xs rounded-sm whitespace-pre-wrap break-all font-mono p-xs">
+                    <pre className="bg-gray-50 dark:bg-dark text-xs rounded-sm whitespace-pre-wrap break-all font-mono p-xs">
                         {url}
                     </pre>
                 </Stack>
@@ -163,7 +163,7 @@ export const TriggerInfo = {
                             </Button>
                         )}
                     </CopyButton>
-                    <pre className="bg-gray-50 text-xs rounded-sm whitespace-pre-wrap break-all font-mono p-xs">
+                    <pre className="bg-gray-50 dark:bg-dark text-xs rounded-sm whitespace-pre-wrap break-all font-mono p-xs">
                         {url}
                     </pre>
                 </Stack>

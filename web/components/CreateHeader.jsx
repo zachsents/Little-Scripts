@@ -1,11 +1,16 @@
-import { Button, Group } from "@mantine/core"
-import { TbHeart } from "react-icons/tb"
+import { Button, Group, Space, Switch, Text, Tooltip } from "@mantine/core"
+import { useLocalStorage } from "@mantine/hooks"
+import { TbHeart, TbMoonStars, TbSun } from "react-icons/tb"
 import Brand from "./Brand"
 import NavLink from "./NavLink"
 import ScriptListPopover from "./ScriptListPopover"
 
 
 export default function CreateHeader() {
+
+    const [colorScheme, setColorScheme] = useLocalStorage({
+        key: "color-scheme",
+    })
 
     return (
         <div className="px-xl py-xs">
@@ -22,6 +27,21 @@ export default function CreateHeader() {
                 </Group>
 
                 <Group mr="xl">
+                    <Tooltip label={<Group>
+                        <Text>{`Switch to ${colorScheme === "dark" ? "light" : "dark"} mode`}</Text>
+                        <Text color="dimmed">Ctrl + J</Text>
+                    </Group>}>
+                        <div>
+                            <Switch
+                                size="md"
+                                onChange={event => setColorScheme(event.currentTarget.checked ? "dark" : "light")}
+                                color="gray"
+                                onLabel={<TbMoonStars className="text-md text-blue" />}
+                                offLabel={<TbSun className="text-md text-yellow" />}
+                            />
+                        </div>
+                    </Tooltip>
+                    <Space w="1rem" />
                     <Button
                         component="a" href="https://forms.gle/ZFsNpxXLxjkDQ3J4A" target="_blank"
                         leftIcon={<TbHeart />}

@@ -17,11 +17,11 @@ export default function ScriptItem({ script, onOpen, tab }) {
 
     return (
         <Link href={`/script/${script.id}${tab ? `?tab=${tab}` : ""}`} className="no-underline" onClick={onOpen} key={script.id}>
-            <Group className="group hover:bg-gray-50 cursor-pointer base-border rounded px-lg py-sm text-dark" position="apart">
+            <Group className="group hover:bg-gray-50 dark:hover:bg-dark-500 cursor-pointer base-border rounded px-lg py-sm text-dark dark:text-gray-300" position="apart">
                 <Group>
                     {icon}
                     <div className="group-hover:text-primary">
-                        <Text fw={500} >
+                        <Text fw={500}>
                             {script.name}
                         </Text>
                         <Text size="xs" color="dimmed">

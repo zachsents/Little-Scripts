@@ -92,7 +92,7 @@ function TriggerTypeButton({ type, onCreate }) {
     return (
         <button
             onClick={createQuery.refetch}
-            className="px-lg py-xs rounded border-none bg-transparent cursor-pointer bg- hover:bg-gray-100"
+            className="px-lg py-xs rounded border-none bg-transparent cursor-pointer bg- hover:bg-gray-100 dark:hover:bg-dark-500"
             disabled={createQuery.isFetching}
         >
             <Group noWrap>
@@ -100,7 +100,7 @@ function TriggerTypeButton({ type, onCreate }) {
                     <Loader size="xs" /> :
                     <triggerInfo.icon />}
                 <Stack spacing={0} align="flex-start" className="flex-1">
-                    <Text ta="left" fw="bold" color={triggerInfo.color}>
+                    <Text ta="left" fw="bold">
                         {triggerInfo.name}
                     </Text>
                     <Text ta="left" size="sm" color="dimmed">

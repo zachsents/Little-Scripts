@@ -1,4 +1,4 @@
-import { Blockquote, Button, Center, CopyButton, Group, Stack, Table, Tabs, Text, Tooltip } from "@mantine/core"
+import { Blockquote, Button, Center, CopyButton, Group, Stack, Table, Tabs, Text, Tooltip, useMantineTheme } from "@mantine/core"
 import { modals } from "@mantine/modals"
 import { Prism } from "@mantine/prism"
 import MonacoEditor from "@monaco-editor/react"
@@ -28,6 +28,8 @@ const chatGPTMessage = `Write the code in plain JavaScript with ES2020 syntax an
 
 
 export default function CodeSection() {
+
+    const theme = useMantineTheme()
 
     const editorTab = useMainStore(s => s.editorTab)
     const setEditorTab = useMainStore(s => s.setEditorTab)
@@ -68,7 +70,7 @@ export default function CodeSection() {
         title: "Coding with ChatGPT",
         children: <Stack spacing="xs">
             <Text color="dimmed">To generate the right code, add this to your prompt so ChatGPT:</Text>
-            <Blockquote icon={<TbUser />} className="bg-gray-50 rounded font-mono text-sm">
+            <Blockquote icon={<TbUser className="dark:text-gray-100" />} className="bg-gray-50 dark:bg-dark-500 rounded font-mono text-sm">
                 {chatGPTMessage}
             </Blockquote>
             <Group position="right">
@@ -129,7 +131,7 @@ export default function CodeSection() {
             </Tabs.List>
 
             <Tabs.Panel value="code" className={editorTab === "code" && "flex"}>
-                <Group px="xs" py="xxs" bg="gray.0" position="right">
+                <Group px="xs" py="xxs" className="bg-gray-50 dark:bg-dark" position="right">
                     {isCodeDirty ?
                         <Group spacing="xs">
                             <Text size="xs" color="dimmed">Changes</Text>
@@ -150,11 +152,11 @@ export default function CodeSection() {
                         <Text size="xs" color="dimmed">All changes saved.</Text>}
                 </Group>
 
-                <div className="flex-1">
+                <div className="flex-1 dark:contrast-[1.1] dark:saturate-150">
                     <MonacoEditor
                         height="100%"
                         language="javascript"
-                        theme="light"
+                        theme={theme.colorScheme == "dark" ? "vs-dark" : "light"}
                         value={workingCode}
                         onChange={newCode => {
                             setWorkingCode(newCode)
