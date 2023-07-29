@@ -1,7 +1,8 @@
-import { Blockquote, Button, Center, CopyButton, Group, Stack, Table, Tabs, Text, Tooltip, useMantineTheme } from "@mantine/core"
+import { Blockquote, Button, Center, CopyButton, Group, Stack, Table, Tabs, Text, Tooltip } from "@mantine/core"
 import { modals } from "@mantine/modals"
 import { Prism } from "@mantine/prism"
 import MonacoEditor from "@monaco-editor/react"
+import { useColorScheme } from "@web/modules/color-scheme"
 import { fire, useScript, useSetStorageFileContent } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { logEvent } from "firebase/analytics"
@@ -29,7 +30,7 @@ const chatGPTMessage = `Write the code in plain JavaScript with ES2020 syntax an
 
 export default function CodeSection() {
 
-    const theme = useMantineTheme()
+    const [colorScheme] = useColorScheme()
 
     const editorTab = useMainStore(s => s.editorTab)
     const setEditorTab = useMainStore(s => s.setEditorTab)
@@ -159,7 +160,7 @@ export default function CodeSection() {
                     <MonacoEditor
                         height="100%"
                         language="javascript"
-                        theme={theme.colorScheme == "dark" ? "vs-dark" : "light"}
+                        theme={colorScheme == "dark" ? "vs-dark" : "light"}
                         value={workingCode}
                         onChange={newCode => {
                             setWorkingCode(newCode)

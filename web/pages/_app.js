@@ -1,8 +1,9 @@
 import { ColorSchemeProvider, MantineProvider } from "@mantine/core"
-import { useHotkeys, useLocalStorage } from "@mantine/hooks"
+import { useHotkeys } from "@mantine/hooks"
 import { ModalsProvider } from "@mantine/modals"
 import { Notifications } from "@mantine/notifications"
 import UpgradeModal from "@web/components/UpgradeModal"
+import { useColorScheme } from "@web/modules/color-scheme"
 import "@web/modules/firebase"
 import { fire } from "@web/modules/firebase"
 import { mantineTheme } from "@web/theme"
@@ -18,11 +19,7 @@ const queryClient = new QueryClient()
 
 export default function MyApp({ Component, pageProps }) {
 
-    const [colorScheme, setColorScheme] = useLocalStorage({
-        key: "color-scheme",
-        defaultValue: "light",
-    })
-    const toggleColorScheme = value => setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"))
+    const [colorScheme, toggleColorScheme] = useColorScheme()
 
     useHotkeys([
         ["mod+J", () => toggleColorScheme()]

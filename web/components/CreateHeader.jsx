@@ -1,5 +1,5 @@
 import { Button, Group, Space, Switch, Text, Tooltip } from "@mantine/core"
-import { useLocalStorage } from "@mantine/hooks"
+import { useColorScheme } from "@web/modules/color-scheme"
 import { TbHeart, TbMoonStars, TbSun } from "react-icons/tb"
 import Brand from "./Brand"
 import NavLink from "./NavLink"
@@ -8,9 +8,7 @@ import ScriptListPopover from "./ScriptListPopover"
 
 export default function CreateHeader() {
 
-    const [colorScheme, setColorScheme] = useLocalStorage({
-        key: "color-scheme",
-    })
+    const [colorScheme, setColorScheme] = useColorScheme()
 
     return (
         <div className="px-xl py-xs">
