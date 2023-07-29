@@ -3,14 +3,15 @@ import { useScript } from "@web/modules/firebase"
 import { useMainStore } from "@web/modules/store"
 import { useSelectedTrigger } from "@web/modules/triggers"
 import { useDeleteScript } from "@web/modules/util"
+import classNames from "classnames"
 import { updateDoc } from "firebase/firestore"
 import { useState } from "react"
-import { TbChartLine, TbDots, TbPencil, TbReportMoney, TbRun, TbTrash } from "react-icons/tb"
+import { TbChartLine, TbDots, TbLayoutSidebarLeftCollapse, TbLayoutSidebarLeftExpand, TbPencil, TbReportMoney, TbRun, TbTrash } from "react-icons/tb"
+import BillingConfig from "./BillingConfig"
 import ConfigPanel from "./ConfigPanel"
 import EditableText from "./EditableText"
 import SelectedTriggerConfig from "./SelectedTriggerConfig"
 import TriggersConfig from "./TriggersConfig"
-import BillingConfig from "./BillingConfig"
 
 
 const ICON_SIZE = "1.5rem"
@@ -34,42 +35,60 @@ export default function ConfigSection() {
     }
 
     return <>
-        <Stack w="22rem" miw="22rem">
-            <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart" noWrap>
-                {isRenamingTitle ?
-                    <EditableText
-                        highlight
-                        initialValue={script?.name}
-                        onEdit={rename}
-                        onCancel={() => setIsRenamingTitle(false)}
-                        size="sm"
-                    /> :
-                    <Title order={3}>
-                        {script?.name}
-                    </Title>}
+        <Stack className={classNames({
+            "w-[22rem] min-w-[22rem]": configTab != null,
+        })}>
+            {configTab == null ?
+                <Tooltip label="Expand Sidebar">
+                    <Center
+                        onClick={() => setConfigTab("triggers")}
+                        className="py-md text-xl bg-gray-100 hover:bg-gray-200 rounded-md text-dark-300 cursor-pointer"
+                    >
+                        <TbLayoutSidebarLeftExpand />
+                    </Center>
+                </Tooltip> :
+                <Group className="bg-gray-100 rounded-lg px-lg py-xs" position="apart" noWrap>
+                    <Group noWrap>
+                        {isRenamingTitle ?
+                            <EditableText
+                                highlight
+                                initialValue={script?.name}
+                                onEdit={rename}
+                                onCancel={() => setIsRenamingTitle(false)}
+                                size="sm"
+                            /> :
+                            <Title order={3} lineClamp={1}>
+                                {script?.name}
+                            </Title>}
+                        <Menu shadow="sm">
+                            <Menu.Target>
+                                <ActionIcon
+                                    loading={deleteQuery.isFetching}
+                                    className="hover:bg-gray-200"
+                                >
+                                    <TbDots />
+                                </ActionIcon>
+                            </Menu.Target>
+                            <Menu.Dropdown>
+                                <Menu.Item icon={<TbPencil />} onClick={() => setIsRenamingTitle(true)}>
+                                    Rename Script
+                                </Menu.Item>
+                                <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
+                                    Delete Script
+                                </Menu.Item>
+                            </Menu.Dropdown>
+                        </Menu>
+                    </Group>
 
-                <Menu shadow="sm">
-                    <Menu.Target>
-                        <ActionIcon
-                            loading={deleteQuery.isFetching}
-                            className="hover:bg-gray-200"
-                        >
-                            <TbDots />
+                    <Tooltip label="Collpase Sidebar">
+                        <ActionIcon size="lg" className="-my-4" onClick={() => setConfigTab(null)}>
+                            <TbLayoutSidebarLeftCollapse />
                         </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                        <Menu.Item icon={<TbPencil />} onClick={() => setIsRenamingTitle(true)}>
-                            Rename Script
-                        </Menu.Item>
-                        <Menu.Item icon={<TbTrash />} color="red" onClick={confirmDelete}>
-                            Delete Script
-                        </Menu.Item>
-                    </Menu.Dropdown>
-                </Menu>
-            </Group>
+                    </Tooltip>
+                </Group>}
 
             <Tabs
-                orientation="vertical" variant="pills"
+                orientation="vertical" variant="pills" allowTabDeactivation
                 value={configTab} onTabChange={setConfigTab}
                 className="flex-1"
                 classNames={{
