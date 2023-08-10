@@ -12,6 +12,7 @@
     "dependencies": {
         "@littlescript/url": "*",
         "axios": "^1.4.0",
+        "google-spreadsheet": "^4.0.2",
         "googleapis": "^121.0.0",
         "jsdom": "^22.1.0",
         "lodash": "^4.17.21",

@@ -15,6 +15,7 @@ import LogsSection from "./LogsSection"
 
 const dependencies = {
     "axios": "^1.4.0",
+    "google-spreadsheet": "^4.0.2",
     "googleapis": "^121.0.0",
     "jsdom": "^22.1.0",
     "lodash": "^4.17.21",
@@ -22,7 +23,7 @@ const dependencies = {
     "node-fetch": "^3.3.1",
     "openai": "^3.3.0",
     "puppeteer": "^20.8.1",
-    "xvfb": "^0.4.0"
+    "xvfb": "^0.4.0",
 }
 
 const chatGPTMessage = `Write the code in plain JavaScript with ES2020 syntax and using ES modules. If needed, only use these dependencies: ${Object.keys(dependencies).join(", ")}.`
